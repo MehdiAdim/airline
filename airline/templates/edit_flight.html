@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <h1>Edit flight</h1>
+  <form action="" method="POST">
+   
+    
+    <div class="form-group"> <!-- Date input -->
+        <label>Departure date</label>
+        <input class="form-control" name="date1"   placeholder="YYYY-MM-DD" type="text" value={{edit_one[1]}}>
+    </div>
+
+    <div class="form-group"> <!-- Date input -->
+      <label>Departure time</label>
+      <input class="form-control" name="time1" placeholder="HH:MM" type="text" value={{edit_one[3]}}>
+    </div>
+
+    <div class="form-group"> <!-- Date input -->
+      <label>Arrival date</label>
+      <input class="form-control" name="date2" placeholder="YYYY-MM-DD" type="text" value={{edit_one[2]}}>
+    </div>
+    <div class="form-group"> <!-- Date input -->
+      <label>Arrival time</label>
+      <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{edit_one[4]}}>
+    </div>
+
+    <div class="form-group">
+        <label>Aircraft</label>
+        <select name="aircraft" class="form-control"  method="GET" action="/">
+            <option  selected>{{edit_one[5]}}</option>
+            {% for x in list_aircraft %}
+              <option value="{{x[:3]}}">{{x[:3]}}</option>
+            {% endfor %}
+        </select>
+        
+       
+    </div>
+    <div class="form-group">
+        <label>Link</label>
+        <select name="link" class="form-control" method="GET" action="/">
+          
+          <option  selected>{{edit_one[6]}}</option>
+            {% for x in list_link %}
+              <option value="{{x}}">{{x}}</option>
+            {% endfor %}
+        </select>
+        
+       
+    </div>
+   
+
+    <button type="submit" class="btn btn-primary">Edit</button>
+  </form>
+{% endblock %}
