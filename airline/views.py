@@ -14,7 +14,7 @@ mysql = MySQL()
  
 # MySQL configurations
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'root
 app.config['MYSQL_DATABASE_DB'] = 'airline'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
@@ -417,3 +417,23 @@ def edit_flight(id):
 
 
     return render_template('edit_flight.html',list_aircraft=list_aircrafts, list_link = list_link , edit_one = edit_one )
+
+
+@app.route('/my-tickets')
+@is_logged_in
+def my_tickets():
+
+    cur = connection.cursor()
+    result = cur.execute("""
+        SELECT t.* FROM tickets t
+        LEFT JOIN clients c ON t.clients_clientID = c.clientID
+        WHERE c.username=%s""",(session['username']))
+    tickets = cur.fetchall()
+    if result > 0:
+        return render_template('my-tickets.html',tickets=tickets)
+        
+    else:
+        msg = "No tickets found"
+        return render_template('my-tickets.html',msg = msg)
+
+    cur.close()

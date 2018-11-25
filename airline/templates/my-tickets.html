@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+   <table class="table table-striped">
+      <tr>
+        <th> Flight ID </th>
+        <th> Departure date </th>
+        <th> Arrival date </th>
+        <th> Aircraft ID </th>
+        <th> Link ID </th>
+        <th> Edit </th>
+
+
+      </tr>   
+      {% for x in tickets %}
+        <tr>
+          <td> {{x[0]}}</td>
+          <td> {{x[1]}} - {{x[3]}}</td>
+          <td> {{x[2]}} - {{x[4]}}</td>
+          <td> {{x[5]}}</td>
+          <td> {{x[6]}}</td>
+          <td> <a href="edit_flight/{{x[0]}}" class = "btn btn-default pullright"> Edit</a></td>
+
+        </tr>
+      {% endfor %}
+  </table>
+
+
+  {% for x in tickets %}
+    <div class="">
+        from: {{x[0]}}
+        to: {{x[0]}}
+        departure time:
+        arrival time:
+        price
+        <button>cancel</button>
+    </div>
+  {% endfor %}
+{% endblock %}
