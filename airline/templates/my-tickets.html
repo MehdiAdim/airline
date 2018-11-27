@@ -1,30 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
 
-   <table class="table table-striped">
-      <tr>
-        <th> Flight ID </th>
-        <th> Departure date </th>
-        <th> Arrival date </th>
-        <th> Aircraft ID </th>
-        <th> Link ID </th>
-        <th> Edit </th>
-
-
-      </tr>   
-      {% for x in tickets %}
-        <tr>
-          <td> {{x[0]}}</td>
-          <td> {{x[1]}} - {{x[3]}}</td>
-          <td> {{x[2]}} - {{x[4]}}</td>
-          <td> {{x[5]}}</td>
-          <td> {{x[6]}}</td>
-          <td> <a href="edit_flight/{{x[0]}}" class = "btn btn-default pullright"> Edit</a></td>
-
-        </tr>
-      {% endfor %}
-  </table>
-
 
   {% for x in tickets %}
     <div class="">
@@ -36,4 +12,37 @@
         <button>cancel</button>
     </div>
   {% endfor %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="ticket-title">Paris <span class="glyphicon glyphicon-arrow-right"></span> Amsterdam</div>
+                </div>
+                <div class="panel-body">
+                    <div class="col-xs-8">
+                            <div class="row">From <span class="city">Paris (CDG)</span> To <span class="city">Amsterdam (AZE)</span></div>
+                            <div class="row">Departure on 01/01/2018 at 10:00 PM</div>
+                            <div class="row">Arrival on 02/01/2018 at 01:00 AM</div>
+                            <div class="row">Total price: 100,00€</div>
+                    </div>
+                    <div class="col-xs-4">    
+                        <a href="/cancel/01"><button type="button" class="btn btn-default pull-right">Cancel</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<style>
+.ticket-title {
+    font-size: 1.8em;
+    font-weight: 600;
+}
+
+.ticket-title .glyphicon{
+    font-size: 0.75em;
+}
+</style>
 {% endblock %}

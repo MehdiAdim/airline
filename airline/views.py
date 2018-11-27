@@ -14,7 +14,7 @@ mysql = MySQL()
  
 # MySQL configurations
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'Tonio123'
 app.config['MYSQL_DATABASE_DB'] = 'airline'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
@@ -428,12 +428,37 @@ def my_tickets():
         SELECT t.* FROM tickets t
         LEFT JOIN clients c ON t.clients_clientID = c.clientID
         WHERE c.username=%s""",(session['username']))
+        # Sort by date
+        # Get aircraft type
+        #
     tickets = cur.fetchall()
+    cur.close()
     if result > 0:
+        for t in tickets:
+            #separate date / time
+            pass
         return render_template('my-tickets.html',tickets=tickets)
         
     else:
         msg = "No tickets found"
         return render_template('my-tickets.html',msg = msg)
 
+@app.route('/cancel/<ticketID>')
+@is_logged_in
+def cancel(ticketID):
+
+    cur = connection.cursor()
+    result = cur.execute("""
+        DELETE FROM tickets
+        WHERE ticketID = %s""",(ticketID))
+    tickets = cur.fetchall()
     cur.close()
+    if result > 0:
+        msg = "Your ticket was successfully canceled"
+        return render_template('my-tickets.html',tickets=tickets, msg = msg)
+        
+    else:
+        msg = "No tickets found"
+        return render_template('my-tickets.html',msg = msg)
+
+    
