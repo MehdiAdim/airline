@@ -119,41 +119,15 @@ CREATE TABLE IF NOT EXISTS `airline`.`employees` (
   `surname` VARCHAR(45) NOT NULL,
   `flight_hours` DECIMAL(9,2) NOT NULL,
   `social_security_number` INT NOT NULL,
-  PRIMARY KEY (`employeeID`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `airline`.`pilots`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `airline`.`pilots` (
-  `pilotID` INT NOT NULL AUTO_INCREMENT,
-  `license` VARCHAR(45) NOT NULL,
-  `employeeID` INT NOT NULL,
-  PRIMARY KEY (`pilotID`),
-  INDEX `fk_pilots_Employees1_idx` (`employeeID` ASC) ,
-  CONSTRAINT `fk_pilots_Employees1`
-    FOREIGN KEY (`employeeID`)
-    REFERENCES `airline`.`employees` (`employeeID`)
+  `roleID` INT NOT NULL,
+  PRIMARY KEY (`employeeID`),
+   INDEX `fk_role_idx` (`roleID` ASC) ,
+  CONSTRAINT `fk_role`
+    FOREIGN KEY (`roleID`)
+    REFERENCES `airline`.`role` (`roleID`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `airline`.`crew_members`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `airline`.`crew_members` (
-  `crew_memberID` INT NOT NULL AUTO_INCREMENT,
-  `role` VARCHAR(45) NOT NULL,
-  `employeeID` INT NOT NULL,
-  PRIMARY KEY (`crew_memberID`),
-  INDEX `fk_crew_members_Employees1_idx` (`employeeID` ASC) ,
-  CONSTRAINT `fk_crew_members_Employees1`
-    FOREIGN KEY (`employeeID`)
-    REFERENCES `airline`.`employees` (`employeeID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE NO ACTION
+)
 ENGINE = InnoDB;
 
 
@@ -226,6 +200,15 @@ CREATE TABLE IF NOT EXISTS `airline`.`tickets` (
     REFERENCES `airline`.`clients` (`clientID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+
+CREATE TABLE IF NOT EXISTS `airline`.`role` (
+  `roleID` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  
+  PRIMARY KEY (`roleID`))
 ENGINE = InnoDB;
 
 
