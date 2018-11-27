@@ -1,23 +1,21 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-  <h1>Add airport</h1>
-  <form action="" method="POST">
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" name="name" class="form-control" value={{request.form.name}}>
-    </div>
-    <div class="form-group">
-      <label>Code</label>
-      <input type="text" name="code" class="form-control" value={{request.form.code}}>
-    </div>
-    <div class="form-group">
-            <label>City</label>
-            <input type="text" name="city" class="form-control" value={{request.form.city}}>
-    </div>
+<h1>Add airport</h1>
+<form action="" method="POST">
+  <div class="form-group">
+    <label>Name</label>
+    <input type="text" name="name" class="form-control" value={{request.form.name}}>
+  </div>
+  <div class="form-group">
+    <label>Code</label>
+    <input type="text" name="code" class="form-control" value={{request.form.code}}>
+  </div>
+  <div class="form-group">
+    <label>City</label>
+    <input type="text" name="city" class="form-control" value={{request.form.city}}>
+  </div>
 
-   
-
-    <button type="submit" class="btn btn-primary">Add</button>
-  </form>
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
 {% endblock %}

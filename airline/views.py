@@ -186,6 +186,24 @@ def add_airport():
 
     return render_template('add_airport.html')
 
+@app.route('/all_airports')
+@is_logged_in
+@is_admin
+def all_airports():
+
+    # Create cursor
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM airports")
+    airports = cur.fetchall()
+    cur.close()
+    if result > 0:
+        return render_template('all_airports.html',airports=airports)
+        
+    
+    else:
+        msg = "No airports found"
+        return render_template('all_airports.html',msg = msg)
+
 
 
 @app.route('/add_links', methods=['GET', 'POST'])
@@ -335,7 +353,7 @@ def all_flights():
     cur = connection.cursor()
     result = cur.execute("SELECT * FROM flights")
     flights = cur.fetchall()
-    print(str(result)+'----------')
+    cur.close()
     if result > 0:
         return render_template('all_flights.html',flights=flights)
         
@@ -344,7 +362,7 @@ def all_flights():
         msg = "No flights found"
         return render_template('all_flights.html',msg = msg)
 
-    cur.close()
+    
 
 
 @app.route('/edit_flight/<string:id>', methods=['GET', 'POST'])

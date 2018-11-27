@@ -1,33 +1,29 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-  <h2>Add Link</h2>
-  <form action="" method="POST">
-    
-    <div class="form-group">
-            <label>Departure</label>
-            <select name="departure" class="form-control" method="GET" action="/">
-                <!-- <option value="{{list_aircraft[0][1]}}" selected>{{list_aircraft[0][1]}}</option> -->
-                {% for x in list_aircraft %}
-                  <option value="{{x[:3]}}">{{x[:3]}}</option>
-                {% endfor %}
-            </select>
-            
-           
-    </div>
-    <div class="form-group">
-            <label>Arrival</label>
-            <select name="arrival" class="form-control" method="GET" action="/">
-                <!-- <option value="{{list_aircraft[0][1]}}" selected>{{list_aircraft[0][1]}}</option> -->
-                {% for x in list_aircraft %}
-                  <option value="{{x[:3]}}">{{x[:3]}}</option>
-                {% endfor %}
-            </select>
-            
-           
-    </div>
-    
+<h2>Add Link</h2>
+<form action="" method="POST">
 
-    <button type="submit" class="btn btn-primary">Add</button>
-  </form>
+  <div class="form-group">
+    <label>Departure</label>
+    <select name="departure" class="form-control" method="GET" action="/">
+      <!-- <option value="{{list_aircraft[0][1]}}" selected>{{list_aircraft[0][1]}}</option> -->
+      {% for x in list_aircraft %}
+      <option value="{{x[:3]}}">{{x[:3]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Arrival</label>
+    <select name="arrival" class="form-control" method="GET" action="/">
+      <!-- <option value="{{list_aircraft[0][1]}}" selected>{{list_aircraft[0][1]}}</option> -->
+      {% for x in list_aircraft %}
+      <option value="{{x[:3]}}">{{x[:3]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
 {% endblock %}

@@ -1,55 +1,53 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-  <h1>Add flight</h1>
-  <form action="" method="POST">
-   
-    
-    <div class="form-group"> <!-- Date input -->
-        <label>From date</label>
-        <input class="form-control" name="date1"  placeholder="YYYY-MM-DD" type="text" value={{request.form.date1}}>
-    </div>
+<h1>Add flight</h1>
+<form action="" method="POST">
 
-    <div class="form-group"> <!-- Date input -->
-      <label>To date</label>
-      <input class="form-control" name="date2" placeholder="YYYY-MM-DD" type="text" value={{request.form.date2}}>
-    </div>
-    <div class="form-group"> <!-- Date input -->
-      <label>Departure time</label>
-      <input class="form-control" name="time1" placeholder="HH:MM" type="text" value={{request.form.time1}}>
-    </div>
+  <div class="form-group">
+    <!-- Date input -->
+    <label>From date</label>
+    <input class="form-control" name="date1" placeholder="YYYY-MM-DD" type="text" value={{request.form.date1}}>
+  </div>
 
-    
-    <div class="form-group"> <!-- Date input -->
-      <label>Arrival time</label>
-      <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{request.form.time2}}>
-    </div>
+  <div class="form-group">
+    <!-- Date input -->
+    <label>To date</label>
+    <input class="form-control" name="date2" placeholder="YYYY-MM-DD" type="text" value={{request.form.date2}}>
+  </div>
+  <div class="form-group">
+    <!-- Date input -->
+    <label>Departure time</label>
+    <input class="form-control" name="time1" placeholder="HH:MM" type="text" value={{request.form.time1}}>
+  </div>
 
-    <div class="form-group">
-        <label>Aircraft</label>
-        <select name="aircraft" class="form-control"  method="GET" action="/">
-            <option disabled selected>Aircraft from database</option>
-            {% for x in list_aircraft %}
-              <option value="{{x[:3]}}">{{x[:3]}}</option>
-            {% endfor %}
-        </select>
-        
-       
-    </div>
-    <div class="form-group">
-        <label>Link</label>
-        <select name="link" class="form-control" method="GET" action="/">
-          
-          <option disabled selected>Links between airports from database</option>
-            {% for x in list_link %}
-              <option value="{{x}}">{{x}}</option>
-            {% endfor %}
-        </select>
-        
-       
-    </div>
-   
+  <div class="form-group">
+    <!-- Date input -->
+    <label>Arrival time</label>
+    <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{request.form.time2}}>
+  </div>
 
-    <button type="submit" class="btn btn-primary">Add</button>
-  </form>
+  <div class="form-group">
+    <label>Aircraft</label>
+    <select name="aircraft" class="form-control" method="GET" action="/">
+      <option disabled selected>Aircraft from database</option>
+      {% for x in list_aircraft %}
+      <option value="{{x[:3]}}">{{x[:3]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Link</label>
+    <select name="link" class="form-control" method="GET" action="/">
+
+      <option disabled selected>Links between airports from database</option>
+      {% for x in list_link %}
+      <option value="{{x}}">{{x}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
 {% endblock %}
