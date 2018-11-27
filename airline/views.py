@@ -417,7 +417,6 @@ def edit_flight(id):
 
     return render_template('edit_flight.html',list_aircraft=list_aircrafts, list_link = list_link , edit_one = edit_one )
 
-<<<<<<< HEAD
 
 @app.route('/my-tickets')
 @is_logged_in
@@ -462,7 +461,6 @@ def cancel(ticketID):
         return render_template('my-tickets.html',msg = msg)
 
     
-=======
 @app.route('/add_employee', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
@@ -550,4 +548,3 @@ def add_role():
 
 
     return render_template('add_role.html')
->>>>>>> master
