@@ -34,21 +34,24 @@
    <table class="table table-striped">
       <tr>
         <th> Flight ID </th>
-        <th> Departure date </th>
-        <th> Arrival date </th>
+        <th> From date </th>
+        <th> To date </th>
         <th> Aircraft ID </th>
         <th> Link ID </th>
+        <th> Departure time </th>
+        <th> Arrival Time </th>
         <th> Edit </th>
-
 
       </tr>   
       {% for x in flights %}
         <tr>
           <td> {{x[0]}}</td>
-          <td> {{x[1]}} - {{x[3]}}</td>
-          <td> {{x[2]}} - {{x[4]}}</td>
+          <td> {{x[1]}}</td>
+          <td> {{x[2]}}</td>
           <td> {{x[5]}}</td>
           <td> {{x[6]}}</td>
+          <td> {{x[3]}}</td>
+          <td> {{x[4]}}</td>
           <td> <a href="edit_flight/{{x[0]}}" class = "btn btn-default pullright"> Edit</a></td>
 
 

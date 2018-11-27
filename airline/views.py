@@ -425,7 +425,7 @@ def my_tickets():
     cur = connection.cursor()
     result = cur.execute("""
         SELECT t.* FROM tickets t
-        LEFT JOIN clients c ON t.clients_clientID = c.clientID
+        LEFT JOIN clients c ON t.clientID = c.clientID
         WHERE c.username=%s""",(session['username']))
         # Sort by date
         # Get aircraft type

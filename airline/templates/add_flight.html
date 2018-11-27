@@ -6,19 +6,20 @@
    
     
     <div class="form-group"> <!-- Date input -->
-        <label>Departure date</label>
+        <label>From date</label>
         <input class="form-control" name="date1"  placeholder="YYYY-MM-DD" type="text" value={{request.form.date1}}>
     </div>
 
+    <div class="form-group"> <!-- Date input -->
+      <label>To date</label>
+      <input class="form-control" name="date2" placeholder="YYYY-MM-DD" type="text" value={{request.form.date2}}>
+    </div>
     <div class="form-group"> <!-- Date input -->
       <label>Departure time</label>
       <input class="form-control" name="time1" placeholder="HH:MM" type="text" value={{request.form.time1}}>
     </div>
 
-    <div class="form-group"> <!-- Date input -->
-      <label>Arrival date</label>
-      <input class="form-control" name="date2" placeholder="YYYY-MM-DD" type="text" value={{request.form.date2}}>
-    </div>
+    
     <div class="form-group"> <!-- Date input -->
       <label>Arrival time</label>
       <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{request.form.time2}}>
