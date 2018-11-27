@@ -337,7 +337,6 @@ def all_flights():
     flights = cur.fetchall()
     print(str(result)+'----------')
     if result > 0:
-        print('YEEEEES')
         return render_template('all_flights.html',flights=flights)
         
     
@@ -417,3 +416,91 @@ def edit_flight(id):
 
 
     return render_template('edit_flight.html',list_aircraft=list_aircrafts, list_link = list_link , edit_one = edit_one )
+
+@app.route('/add_employee', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def add_employee():
+
+
+    # Create cursor
+    cur = connection.cursor()
+
+    cur.execute("SELECT * FROM role")
+    data = cur.fetchall()
+    list_role = list(data)
+
+    if request.method == 'POST':
+        # Get Form Fields
+        firstname = request.form['firstname']
+        surname = request.form['surname']
+        address = request.form['address']
+        salary = request.form['salary']
+        flight_hours = request.form['flight_hours']
+        social_security_number = request.form['social_security_number']
+
+        # Create cursor
+        cur = connection.cursor()
+        
+        try :
+            role = request.form['role'].strip('()').split(',')[0]
+            
+        except:
+            flash('Role missed', 'danger')
+            return redirect(url_for('add_employee'))
+
+        try:
+            cur.execute("INSERT INTO employees(salary, address, firstname, surname, flight_hours, social_security_number, roleID) VALUES(%s, %s, %s, %s, %s, %s, %s)", (int(salary), address, firstname, surname, int(flight_hours), int(social_security_number), role))
+
+        except :
+            flash('Error, check the form fields', 'danger')
+            return redirect(url_for('add_employee'))
+            
+
+        # Commit to DB
+        connection.commit()
+
+        # Close connection
+        cur.close()
+
+        flash('Employee added succefuly', 'success')
+
+        return redirect(url_for('profil'))
+
+
+    return render_template('add_employee.html',list_role = list_role)
+
+
+
+@app.route('/add_role', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+
+def add_role():
+
+    if request.method == 'POST':
+        # Get Form Fields
+        name = request.form['name']
+
+        # Create cursor
+        cur = connection.cursor()
+
+
+        if name != '':
+            cur.execute("INSERT INTO role(name) VALUES(%s)", (name))
+        else:
+            flash('Name mised', 'danger')
+            return redirect(url_for('add_role'))
+
+        # Commit to DB
+        connection.commit()
+
+        # Close connection
+        cur.close()
+
+        flash('Role added succefuly', 'success')
+
+        return redirect(url_for('profil'))
+
+
+    return render_template('add_role.html')

@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <h1>Add Role</h1>
+  <form action="" method="POST">
+   
+    
+    <div class="form-group"> <!-- Date input -->
+        <label>Role name </label>
+        <input class="form-control" name="name"  type="text" value={{request.form.name}}>
+    </div>
+
+    
+   
+
+    <button type="submit" class="btn btn-primary">Add</button>
+  </form>
+{% endblock %}
