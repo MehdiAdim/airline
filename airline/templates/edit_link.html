@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h1>Edit link</h1>
+<form action="" method="POST">
+    <div class="form-group">
+        <label>ID</label>
+        <input type="text" name="id" class="form-control" value="{{link[0]}}" disabled>
+    </div>
+    <div class="form-group">
+        <label>Departure</label>
+        <select name="departure" class="form-control">
+            {% for airport in airports %}
+            <option value="{{airport[0]}}"{% if airport[0] == link[1] %}selected{% endif %}>{{airport[3]}} - {{airport[1]}} ({{airport[2]}})</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Arrival</label>
+        <select name="arrival" class="form-control">
+            {% for airport in airports %}
+            <option value="{{airport[0]}}" {% if airport[0] == link[2] %}selected{% endif %}>{{airport[3]}} - {{airport[1]}} ({{airport[2]}})</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Edit</button>
+</form>
+{% endblock %}

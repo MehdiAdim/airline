@@ -5,6 +5,9 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from functools import wraps
 
 
+from .forms import RegisterForm
+from .forms import EmployeeForm
+
 app = Flask(__name__)
 
 app.config.from_object('config')
@@ -35,18 +38,7 @@ def about():
     return render_template('about.html')
 
 
-# Register Form Class
-class RegisterForm(Form):
-    surname =  StringField('Surname', [validators.Length(min=1, max=50)])
-    firstname = StringField('First Name', [validators.Length(min=1, max=50)])
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email', [validators.Length(min=6, max=50)])
-    adresse = StringField('Adresse',[validators.Length(min=6, max=50)])
-    password = PasswordField('Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords do not match')
-    ])
-    confirm = PasswordField('Confirm Password')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -157,105 +149,202 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))  
 
-@app.route('/add_airport', methods=['GET', 'POST'])
+@app.route('/edit/airport/<airportID>', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
-def add_airport():
+def edit_airport(airportID):
+    cur = connection.cursor()
     if request.method == 'POST':
         # Get Form Fields
         name = request.form['name']
         code = request.form['code']
         city = request.form['city']
 
-
-        # Create cursor
-        cur = connection.cursor()
-
-        cur.execute("INSERT INTO airports(name, code, city) VALUES(%s, %s, %s)", (name, code, city))
-
-        # Commit to DB
+        cur.execute(
+            """UPDATE airports 
+            SET name=%s, code=%s, city=%s
+            WHERE airportID=%s""", (name, code, city, airportID))
         connection.commit()
+        cur.close()
 
-        # Close connection
+        flash('Airport edited succefuly', 'success')
+
+        return redirect(url_for('airports'))
+
+    cur.execute(
+        """SELECT * from airports 
+        WHERE airportID=%s""", (airportID))
+    airport = cur.fetchone()
+    return render_template('edit_airport.html', airport=airport)
+
+
+@app.route('/airports', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def airports():
+    if request.method == 'POST':
+        # Get Form Fields
+        name = request.form['name']
+        code = request.form['code']
+        city = request.form['city']
+
+        cur = connection.cursor()
+        cur.execute("INSERT INTO airports(name, code, city) VALUES(%s, %s, %s)", (name, code, city))
+        connection.commit()
         cur.close()
 
         flash('Airport added succefuly', 'success')
 
-        return redirect(url_for('profil'))
+        return redirect(url_for('airports'))
+
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM airports")
+    airports = cur.fetchall()
+    cur.close()
+    if result > 0:
+        return render_template('airports.html',airports=airports)
+        
+    
+    else:
+        msg = "No airports found"
+        return render_template('airports.html',msg = msg)
 
 
-    return render_template('add_airport.html')
 
-
-
-@app.route('/add_links', methods=['GET', 'POST'])
+@app.route('/edit/link/<linkID>', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
-def add_link():
+def edit_link(linkID):
 
-    # Create cursor
     cur = connection.cursor()
-
-    result = cur.execute("SELECT * FROM airports")
-    data = cur.fetchall()
-
-    list_aircraft = list(data)
-
     if request.method == 'POST':
         # Get Form Fields
-        departure = request.form['departure'].strip('()').split(',')
-        arrival = request.form['arrival'].strip('()').split(',')
+        departure = request.form['departure']
+        arrival = request.form['arrival']
 
-
-        id1 = departure[0]
-        id2 = arrival[0]
-
-        cur.execute("INSERT INTO links(departure_airportID, arrival_airportID) VALUES(%s, %s)", (id1, id2))
-
-        # Commit to DB
+        cur.execute(
+            """UPDATE links 
+            SET departure_airportID=%s, arrival_airportID=%s
+            WHERE linkID=%s""", (departure, arrival, linkID))
         connection.commit()
-
-        # Close connection
         cur.close()
 
-        flash('Link added succefuly', 'success')
+        flash('Link edited succefuly', 'success')
 
-        return redirect(url_for('profil'))
+        return redirect(url_for('links'))
+
+    result = cur.execute(
+        """SELECT * FROM links
+        WHERE linkID=%s""", (linkID))
+    link = cur.fetchone()
+    cur.close()
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM airports")
+    airports = cur.fetchall()
+    cur.close()
+    return render_template('edit_link.html', link=link, airports=airports)
 
 
-    return render_template('add_links.html', list_aircraft=list_aircraft)
-
-
-@app.route('/add_aircraft', methods=['GET', 'POST'])
+@app.route('/links', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
-def add_aircraft():
+def links():
+    if request.method == 'POST':
+        # Get Form Fields
+        departure = request.form['departure']
+        arrival = request.form['arrival']
+
+        cur = connection.cursor()
+        cur.execute("INSERT INTO links(departure_airportID, arrival_airportID) VALUES(%s, %s)", (departure, arrival))
+        connection.commit()
+        cur.close()
+        print('ok')
+        flash('Link added succefuly', 'success')
+
+        return redirect(url_for('links'))
+
+    cur = connection.cursor()
+    result = cur.execute(
+        """SELECT l.linkID, da.*, aa.*
+        FROM links AS l
+        LEFT JOIN airports AS da on da.airportID = l.departure_airportID
+        LEFT JOIN airports AS aa on aa.airportID = l.arrival_airportID""")
+    links = cur.fetchall()
+    cur.close()
+    print(links)
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM airports")
+    airports = cur.fetchall()
+    cur.close()
+    if result > 0:
+        return render_template('links.html',links=links, airports=airports)
+        
+    
+    else:
+        msg = "No links found"
+        return render_template('links.html',msg = msg)
 
 
+@app.route('/aircrafts', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def aircrafts():
     if request.method == 'POST':
         # Get Form Fields
         immatriculation = request.form['immatriculation']
-        type_ = request.form['type']
+        aircraft_type = request.form['type']
         seats = request.form['seats']
 
-        # Create cursor
         cur = connection.cursor()
-       
-
-        cur.execute("INSERT INTO aircrafts(immatriculation, type, seats) VALUES(%s, %s, %s)", (immatriculation, type_, seats))
-
-        # Commit to DB
+        cur.execute("INSERT INTO aircrafts(immatriculation, type, seats) VALUES(%s, %s, %s)",
+            (immatriculation, aircraft_type, seats))
         connection.commit()
-
-        # Close connection
         cur.close()
 
         flash('Aircraft added succefuly', 'success')
 
-        return redirect(url_for('profil'))
+        return redirect(url_for('aircrafts'))
+
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM aircrafts")
+    aircrafts = cur.fetchall()
+    cur.close()
+    if result > 0:
+        return render_template('aircrafts.html',aircrafts=aircrafts)
+        
+    
+    else:
+        msg = "No aircrafts found"
+        return render_template('aircrafts.html',msg = msg)
 
 
-    return render_template('add_aircraft.html')
+@app.route('/edit/aircraft/<aircraftID>', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def edit_aircraft(aircraftID):
+    cur = connection.cursor()
+    if request.method == 'POST':
+        # Get Form Fields
+        immatriculation = request.form['immatriculation']
+        aircraft_type = request.form['type']
+        seats = request.form['seats']
+
+        cur.execute(
+            """UPDATE aircrafts 
+            SET immatriculation=%s, type=%s, seats=%s
+            WHERE aircraftID=%s""", (immatriculation, aircraft_type, seats, aircraftID))
+        connection.commit()
+        cur.close()
+
+        flash('Aircraft edited succefuly', 'success')
+
+        return redirect(url_for('aircrafts'))
+
+    cur.execute(
+        """SELECT * from aircrafts 
+        WHERE aircraftID=%s""", (aircraftID))
+    aircraft = cur.fetchone()
+    return render_template('edit_aircraft.html', aircraft=aircraft)
 
 
 @app.route('/add_flight', methods=['GET', 'POST'])
@@ -335,7 +424,7 @@ def all_flights():
     cur = connection.cursor()
     result = cur.execute("SELECT * FROM flights")
     flights = cur.fetchall()
-    print(str(result)+'----------')
+    cur.close()
     if result > 0:
         return render_template('all_flights.html',flights=flights)
         
@@ -344,7 +433,7 @@ def all_flights():
         msg = "No flights found"
         return render_template('all_flights.html',msg = msg)
 
-    cur.close()
+    
 
 
 @app.route('/edit_flight/<string:id>', methods=['GET', 'POST'])
@@ -417,6 +506,50 @@ def edit_flight(id):
 
     return render_template('edit_flight.html',list_aircraft=list_aircrafts, list_link = list_link , edit_one = edit_one )
 
+
+@app.route('/my-tickets')
+@is_logged_in
+def my_tickets():
+
+    cur = connection.cursor()
+    result = cur.execute("""
+        SELECT t.* FROM tickets t
+        LEFT JOIN clients c ON t.clientID = c.clientID
+        WHERE c.username=%s""",(session['username']))
+        # Sort by date
+        # Get aircraft type
+        #
+    tickets = cur.fetchall()
+    cur.close()
+    if result > 0:
+        for t in tickets:
+            #separate date / time
+            pass
+        return render_template('my-tickets.html',tickets=tickets)
+        
+    else:
+        msg = "No tickets found"
+        return render_template('my-tickets.html',msg = msg)
+
+@app.route('/cancel/<ticketID>')
+@is_logged_in
+def cancel(ticketID):
+
+    cur = connection.cursor()
+    result = cur.execute("""
+        DELETE FROM tickets
+        WHERE ticketID = %s""",(ticketID))
+    tickets = cur.fetchall()
+    cur.close()
+    if result > 0:
+        msg = "Your ticket was successfully canceled"
+        return render_template('my-tickets.html',tickets=tickets, msg = msg)
+        
+    else:
+        msg = "No tickets found"
+        return render_template('my-tickets.html',msg = msg)
+
+    
 @app.route('/add_employee', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
@@ -443,7 +576,7 @@ def add_employee():
         cur = connection.cursor()
         
         try :
-            role = request.form['role'].strip('()').split(',')[0]
+            role = request.form['role']
             
         except:
             flash('Role missed', 'danger')
@@ -472,35 +605,107 @@ def add_employee():
 
 
 
-@app.route('/add_role', methods=['GET', 'POST'])
+@app.route('/edit/role/<roleID>', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
+def edit_role(roleID):
 
-def add_role():
-
+    cur = connection.cursor()
     if request.method == 'POST':
         # Get Form Fields
         name = request.form['name']
 
-        # Create cursor
-        cur = connection.cursor()
-
-
-        if name != '':
-            cur.execute("INSERT INTO role(name) VALUES(%s)", (name))
-        else:
-            flash('Name mised', 'danger')
-            return redirect(url_for('add_role'))
-
-        # Commit to DB
+        cur.execute(
+            """UPDATE role 
+            SET name=%s
+            WHERE roleID=%s""", (name, roleID))
         connection.commit()
+        cur.close()
 
-        # Close connection
+        flash('Role edited succefuly', 'success')
+
+        return redirect(url_for('roles'))
+
+    cur.execute(
+        """SELECT * from role
+        WHERE roleID=%s""", (roleID))
+    role = cur.fetchone()
+    return render_template('edit_role.html', role=role)
+
+
+@app.route('/roles', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def roles():
+    if request.method == 'POST':
+        # Get Form Fields
+        name = request.form['role']
+    
+        cur = connection.cursor()
+        cur.execute("INSERT INTO role(name) VALUES(%s)", (name))
+        connection.commit()
         cur.close()
 
         flash('Role added succefuly', 'success')
 
-        return redirect(url_for('profil'))
+        return redirect(url_for('roles'))
+
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM role")
+    roles = cur.fetchall()
+    cur.close()
+    if result > 0:
+        return render_template('roles.html',roles=roles)
+        
+    else:
+        msg = "No roles found"
+        return render_template('roles.html',msg = msg)
 
 
-    return render_template('add_role.html')
+@app.route('/employees', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def employees():
+
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM role")
+    roles = cur.fetchall()
+    cur.close()
+
+    form = EmployeeForm(request.form)
+    form.role.choices = roles
+    if request.method == 'POST' and form.validate():
+        firstname = form.firstname.data
+        surname = form.surname.data
+        address = form.address.data
+        salary = form.salary.data
+        flight_hours = form.flight_hours.data
+        social_security_number = form.social_security_number.data
+        role = form.role.data
+
+        
+        cur = connection.cursor()
+        cur.execute("""INSERT INTO employees(salary, address, firstname, surname, flight_hours, social_security_number, roleID)
+            VALUES(%s, %s, %s, %s, %s, %s, %s)""",
+            (salary, address, firstname, surname, flight_hours, social_security_number, role))
+        connection.commit()
+        cur.close()
+
+        flash('Role added succefuly', 'success')
+
+        return redirect(url_for('employees'))
+
+
+    cur = connection.cursor()
+    result = cur.execute("""SELECT *
+        FROM employees
+        LEFT JOIN role on role.roleID = employees.roleID""")
+    employees = cur.fetchall()
+    cur.close()
+    if result > 0:
+        return render_template('employees.html',employees=employees, form=form, form_val=form.validate())
+        
+    else:
+        msg = "No employees found"
+        return render_template('employees.html',msg = msg)
+

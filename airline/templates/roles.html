@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h1>All roles <button class="btn btn-default" onclick="show_add();"><span class="glyphicon glyphicon-plus"></span></button></h1>
+
+<div class="panel panel-default" id="add" style="display: none;">
+  <div class="panel-heading">Add a role</div>
+  <div class="panel-body">
+    <form action="" method="POST">
+      <div class="form-group">
+        <label>Role</label>
+        <input type="text" name="role" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+  </div>
+</div>
+
+<table class="table table-striped">
+  <tr>
+    <th> Role ID </th>
+    <th> Name</th>
+    <th> Role</th>
+  </tr>
+  {% for x in roles %}
+  <tr>
+    <td> {{x[0]}}</td>
+    <td> {{x[1]}}</td>
+    <td> <a href="edit/role/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+
+  </tr>
+  {% endfor %}
+</table>
+
+
+<script>
+  function show_add() {
+    if(document.getElementById("add").style.display === "block"){
+      document.getElementById("add").style.display = "none";
+    } else {
+      document.getElementById("add").style.display = "block";
+    }
+  }
+</script>
+{% endblock %}

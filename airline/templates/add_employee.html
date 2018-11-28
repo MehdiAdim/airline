@@ -1,50 +1,49 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-  <h1>Add employee</h1>
-  <form action="" method="POST">
-   
-    
-    <div class="form-group"> 
-        <label>First name</label>
-        <input class="form-control" name="firstname"   type="text" value={{request.form.firstname}}>
-    </div>
+<h1>Add employee</h1>
+<form action="" method="POST">
 
-    <div class="form-group"> 
-      <label>Surname</label>
-      <input class="form-control" name="surname" type="text" value={{request.form.surname}}>
-    </div>
+  <div class="form-group">
+    <label>First name</label>
+    <input class="form-control" name="firstname" type="text" value={{request.form.firstname}}>
+  </div>
 
-    <div class="form-group"> 
-      <label>Adress</label>
-      <input class="form-control" name="address"  type="text" value={{request.form.address}}>
-    </div>
+  <div class="form-group">
+    <label>Surname</label>
+    <input class="form-control" name="surname" type="text" value={{request.form.surname}}>
+  </div>
 
-    <div class="form-group"> 
-      <label>Salary</label>
-      <input class="form-control" name="salary"  type="text" value={{request.form.salary}}>
-    </div>
+  <div class="form-group">
+    <label>Adress</label>
+    <input class="form-control" name="address" type="text" value={{request.form.address}}>
+  </div>
 
-    <div class="form-group"> 
-      <label>Flight hours</label>
-      <input class="form-control" name="flight_hours"  type="text" value={{request.form.flight_hours}}>
-    </div>
+  <div class="form-group">
+    <label>Salary</label>
+    <input class="form-control" name="salary" type="text" value={{request.form.salary}}>
+  </div>
 
-    <div class="form-group"> 
-        <label>Social security number</label>
-        <input class="form-control" name="social_security_number"  type="text" value={{request.form.social_security_number}}>
-      </div>
-    
-      <div class="form-group">
-        <label>Role</label>
-        <select name="role" class="form-control"  method="GET" action="/">
-            <option disabled selected>Role</option>
-            {% for x in list_role %}
-              <option value="{{x[:2]}}">{{x[:2]}}</option>
-            {% endfor %}
-        </select>
-     </div>
+  <div class="form-group">
+    <label>Flight hours</label>
+    <input class="form-control" name="flight_hours" type="text" value={{request.form.flight_hours}}>
+  </div>
 
-    <button type="submit" class="btn btn-primary">Add</button>
-  </form>
+  <div class="form-group">
+    <label>Social security number</label>
+    <input class="form-control" name="social_security_number" type="text" value={{request.form.social_security_number}}>
+  </div>
+
+  <div class="form-group">
+    <label>Role</label>
+    <select name="role" class="form-control" method="GET" action="/">
+      <option disabled selected>Role</option>
+      {% for x in list_role %}
+      <option value="{{x[0]}}">{{x[1]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
 {% endblock %}

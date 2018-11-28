@@ -1,39 +1,46 @@
 {% extends 'layout.html' %}
 {% block body %}
-  <div class="jumbotron text-center">
+<div class="jumbotron text-center">
+  {% if session.admin %}
+  <h3> ADMIN DASHBOARD</h3>
+  {% else %}
+  <h3> Welcome {{session.username}}</h3>
+  {% endif %}
+</div>
+<div id="navbar" class="collapse navbar-collapse">
+  <ul class="nav navbar-nav">
     {% if session.admin %}
-    <h3> ADMIN DASHBOARD</h3>
+    <a href="/add_airport" class="btn btn-primary btn-lg">Add airport</a>
+    <a href="/add_aircraft" class="btn btn-primary btn-lg">Add aircraft</a>
+    <a href="/add_links" class="btn btn-primary btn-lg">Add link</a>
+    <a href="/add_flight" class="btn btn-primary btn-lg">Add flight</a>
+    <a href="/add_role" class="btn btn-primary btn-lg">Add role</a>
+    <a href="/add_employee" class="btn btn-primary btn-lg">Add employee</a>
+
+
+
     {% else %}
-    <h3> Welcome {{session.username}}</h3>
+    <a href="/search-flight" class="btn btn-primary btn-lg">Search</a>
+    <a href="/my-tickets" class="btn btn-primary btn-lg">See my flights</a>
     {% endif %}
-  </div>
-  <div id="navbar" class="collapse navbar-collapse">
-      <ul class="nav navbar-nav">
-        {% if session.admin %}
-        <a href="/add_airport" class="btn btn-primary btn-lg" >Add airport</a>
-        <a href="/add_aircraft" class="btn btn-primary btn-lg" >Add aircraft</a>
-        <a href="/add_links" class="btn btn-primary btn-lg" >Add link</a>
-        <a href="/add_flight" class="btn btn-primary btn-lg" >Add flight</a>
-        <a href="/add_role" class="btn btn-primary btn-lg" >Add role</a>
-        <a href="/add_employee" class="btn btn-primary btn-lg" >Add employee</a>
-       
 
+  </ul>
+</div>
+<hr>
+</hr>
+<div id="navbar" class="collapse navbar-collapse">
+  <ul class="nav navbar-nav">
+    {% if session.admin %}
+    <a href="/airports" class="btn btn-info btn-lg">Airports</a>
+    <a href="/aircrafts" class="btn btn-info btn-lg">Aircrafts</a>
+    <a href="/links" class="btn btn-info btn-lg">Links</a>
+    <a href="/roles" class="btn btn-info btn-lg">Roles</a>
+    <a href="/employees" class="btn btn-info btn-lg">Employees</a>
+    <a href="/all_flights" class="btn btn-info btn-lg">All flights</a>
+    {% endif %}
+  </ul>
+</div>
+<hr>
+</hr>
 
-        {% else %}
-        <li><a href="/about">Add</a></li>
-        {% endif %}
-        
-      </ul>
-    </div>  
-    <hr></hr>
-    <div id="navbar" class="collapse navbar-collapse">
-      <ul class="nav navbar-nav">
-            {% if session.admin %}
-            
-            <a href="/all_flights" class="btn btn-info btn-lg" >All flights</a>
-            {% endif %}
-          </ul>
-        </div>
-    <hr></hr>
-   
 {% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h1>All airports <button class="btn btn-default" onclick="show_add();"><span class="glyphicon glyphicon-plus"></span></button></h1>
+
+<div class="panel panel-default" id="add" style="display: none;">
+  <div class="panel-heading">Add an airport</div>
+  <div class="panel-body">
+    <form action="" method="POST">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" class="form-control" value={{request.form.name}}>
+      </div>
+      <div class="form-group">
+        <label>Code</label>
+        <input type="text" name="code" class="form-control" value={{request.form.code}}>
+      </div>
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" name="city" class="form-control" value={{request.form.city}}>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+  </div>
+</div>
+
+<table class="table table-striped">
+  <tr>
+    <th> Airport ID </th>
+    <th> Name </th>
+    <th> Code </th>
+    <th> City </th>
+    <th> Edit </th>
+  </tr>
+  {% for x in airports %}
+  <tr>
+    <td> {{x[0]}}</td>
+    <td> {{x[1]}}</td>
+    <td> {{x[2]}}</td>
+    <td> {{x[3]}}</td>
+    <td> <a href="edit/airport/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+
+  </tr>
+  {% endfor %}
+</table>
+
+
+<script>
+  function show_add() {
+    if(document.getElementById("add").style.display === "block"){
+      document.getElementById("add").style.display = "none";
+    } else {
+      document.getElementById("add").style.display = "block";
+    }
+  }
+</script>
+{% endblock %}

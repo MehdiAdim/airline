@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h1>All links <button class="btn btn-default" onclick="show_add();"><span class="glyphicon glyphicon-plus"></span></button></h1>
+
+<div class="panel panel-default" id="add" style="display: none;">
+    <div class="panel-heading">Add an link</div>
+    <div class="panel-body">
+        <form action="" method="POST">
+            <div class="form-group">
+                <label>Departure</label>
+                <select name="departure" class="form-control">
+                    {% for airport in airports %}
+                    <option value="{{airport[0]}}">{{airport[3]}} - {{airport[1]}} ({{airport[2]}})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Arrival</label>
+                <select name="arrival" class="form-control">
+                    {% for airport in airports %}
+                    <option value="{{airport[0]}}">{{airport[3]}} - {{airport[1]}} ({{airport[2]}})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <tr>
+        <th> link ID </th>
+        <th> Departure</th>
+        <th> Arrival </th>
+        <th> Edit </th>
+    </tr>
+    {% for x in links %}
+    <tr>
+        <td> {{x[0]}}</td>
+        <td> {{x[4]}} - {{x[2]}} ({{x[3]}})</td>
+        <td> {{x[8]}} - {{x[6]}} ({{x[7]}})</td>
+        <td> <a href="edit/link/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+
+    </tr>
+    {% endfor %}
+</table>
+
+
+<script>
+    function show_add() {
+        if (document.getElementById("add").style.display === "block") {
+            document.getElementById("add").style.display = "none";
+        } else {
+            document.getElementById("add").style.display = "block";
+        }
+    }
+</script>
+{% endblock %}
