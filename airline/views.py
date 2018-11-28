@@ -5,6 +5,9 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from functools import wraps
 
 
+from .forms import RegisterForm
+from .forms import EmployeeForm
+
 app = Flask(__name__)
 
 app.config.from_object('config')
@@ -35,18 +38,7 @@ def about():
     return render_template('about.html')
 
 
-# Register Form Class
-class RegisterForm(Form):
-    surname =  StringField('Surname', [validators.Length(min=1, max=50)])
-    firstname = StringField('First Name', [validators.Length(min=1, max=50)])
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email', [validators.Length(min=6, max=50)])
-    adresse = StringField('Adresse',[validators.Length(min=6, max=50)])
-    password = PasswordField('Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords do not match')
-    ])
-    confirm = PasswordField('Confirm Password')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -584,7 +576,7 @@ def add_employee():
         cur = connection.cursor()
         
         try :
-            role = request.form['role'].strip('()').split(',')[0]
+            role = request.form['role']
             
         except:
             flash('Role missed', 'danger')
@@ -665,8 +657,55 @@ def roles():
     if result > 0:
         return render_template('roles.html',roles=roles)
         
-    
     else:
         msg = "No roles found"
         return render_template('roles.html',msg = msg)
+
+
+@app.route('/employees', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def employees():
+
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM role")
+    roles = cur.fetchall()
+    cur.close()
+
+    form = EmployeeForm(request.form)
+    form.role.choices = roles
+    if request.method == 'POST' and form.validate():
+        firstname = form.firstname.data
+        surname = form.surname.data
+        address = form.address.data
+        salary = form.salary.data
+        flight_hours = form.flight_hours.data
+        social_security_number = form.social_security_number.data
+        role = form.role.data
+
+        
+        cur = connection.cursor()
+        cur.execute("""INSERT INTO employees(salary, address, firstname, surname, flight_hours, social_security_number, roleID)
+            VALUES(%s, %s, %s, %s, %s, %s, %s)""",
+            (salary, address, firstname, surname, flight_hours, social_security_number, role))
+        connection.commit()
+        cur.close()
+
+        flash('Role added succefuly', 'success')
+
+        return redirect(url_for('employees'))
+
+
+    cur = connection.cursor()
+    result = cur.execute("""SELECT *
+        FROM employees
+        LEFT JOIN role on role.roleID = employees.roleID""")
+    employees = cur.fetchall()
+    cur.close()
+    if result > 0:
+        return render_template('employees.html',employees=employees, form=form, form_val=form.validate())
+        
+    else:
+        msg = "No employees found"
+        return render_template('employees.html',msg = msg)
 

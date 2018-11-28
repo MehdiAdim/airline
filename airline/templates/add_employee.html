@@ -39,7 +39,7 @@
     <select name="role" class="form-control" method="GET" action="/">
       <option disabled selected>Role</option>
       {% for x in list_role %}
-      <option value="{{x[:2]}}">{{x[:2]}}</option>
+      <option value="{{x[0]}}">{{x[1]}}</option>
       {% endfor %}
     </select>
   </div>
