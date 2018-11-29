@@ -2,7 +2,7 @@
 {% block body %}
 <h1>All roles <button class="btn btn-default" onclick="show_add();"><span class="glyphicon glyphicon-plus"></span></button></h1>
 
-<div class="panel panel-default" id="add" style="display: none;">
+<div class="panel panel-default" id="add" {% if first_time %} style="display: none;" {% endif %}>
   <div class="panel-heading">Add a role</div>
   <div class="panel-body">
     <form action="" method="POST">

@@ -2,8 +2,8 @@
 {% block body %}
 {% from "includes/_formhelpers.html" import render_field %}
 <h1>All Employees <button class="btn btn-default" onclick="show_add();"><span class="glyphicon glyphicon-plus"></span></button></h1>
-
-<div class="panel panel-default" id="add" {% if form_val %}style="display: none;"{% endif %}>
+<!--   -->
+<div class="panel panel-default" id="add" {% if first_time %} style="display: none;" {% endif %}>
     <div class="panel-heading">Add an employee</div>
     <div class="panel-body">
         <form action="" method="POST">
@@ -71,5 +71,6 @@
             document.getElementById("add").style.display = "block";
         }
     }
+    
 </script>
 {% endblock %}

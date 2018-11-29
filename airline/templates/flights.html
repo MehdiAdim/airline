@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<h1>All flights <button class="btn btn-default" onclick="show_add();"><span class="glyphicon glyphicon-plus"></span></button></h1>
+
+<div class="panel panel-default" id="add" {% if first_time %} style="display: none;" {% endif %}>
+  <div class="panel-heading">Add a flight</div>
+  <div class="panel-body">
+    <form action="" method="POST">
+
+      <div class="form-group">
+        <!-- Date input -->
+        <label>From date</label>
+        <input class="form-control" name="date1" placeholder="YYYY-MM-DD" type="text" value={{request.form.date1}}>
+      </div>
+    
+      <div class="form-group">
+        <!-- Date input -->
+        <label>To date</label>
+        <input class="form-control" name="date2" placeholder="YYYY-MM-DD" type="text" value={{request.form.date2}}>
+      </div>
+      <div class="form-group">
+        <!-- Date input -->
+        <label>Departure time</label>
+        <input class="form-control" name="time1" placeholder="HH:MM" type="text" value={{request.form.time1}}>
+      </div>
+    
+      <div class="form-group">
+        <!-- Date input -->
+        <label>Arrival time</label>
+        <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{request.form.time2}}>
+      </div>
+    
+      <div class="form-group">
+        <label>Aircraft</label>
+        <select name="aircraft" class="form-control" method="GET" action="/">
+          <option disabled selected>Aircraft from database</option>
+          {% for x in list_aircraft %}
+          <option value="{{x[:3]}}">{{x[:3]}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    
+      <div class="form-group">
+        <label>Link</label>
+        <select name="link" class="form-control" method="GET" action="/">
+    
+          <option disabled selected>Links between airports from database</option>
+          {% for x in list_link %}
+          <option value="{{x}}">{{x}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    
+      <button onclick="show_forever();" type="submit" class="btn btn-primary">Add</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+<table class="table table-striped">
+  <tr>
+    <th> Flight ID </th>
+    <th> From date </th>
+    <th> To date </th>
+    <th> Aircraft ID </th>
+    <th> Link ID </th>
+    <th> Departure time </th>
+    <th> Arrival Time </th>
+    <th> Edit </th>
+  </tr>
+  
+  {% for x in flights %}
+  <tr>
+    <td> {{x[0]}}</td>
+    <td> {{x[1]}}</td>
+    <td> {{x[2]}}</td>
+    <td> {{x[5]}}</td>
+    <td> {{x[6]}}</td>
+    <td> {{x[3]}}</td>
+    <td> {{x[4]}}</td>
+    <td> <a href="edit/flight/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+  </tr>
+  {% endfor %}
+</table>
+
+
+<script>
+  function show_add() {
+    if(document.getElementById("add").style.display === "block"){
+      document.getElementById("add").style.display = "none";
+    } else {
+      document.getElementById("add").style.display = "block";
+    }
+  }
+
+  function show_forever(){
+    document.getElementById("add").style.display = "block";
+
+  }
+</script>
+{% endblock %}

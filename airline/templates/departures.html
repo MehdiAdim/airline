@@ -1,0 +1,117 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h1>All departures <button class="btn btn-default" onclick="show_add();"><span class="glyphicon glyphicon-plus"></span></button></h1>
+
+<div class="panel panel-default" id="add" {% if first_time %} style="display: none;" {% endif %}>
+  <div class="panel-heading">Add a departure</div>
+  <div class="panel-body">
+    <form action="" method="POST">
+      
+     <div class="form-group">
+        <label>Departure date</label>
+        <input type="text" name="departure_date" placeholder ="YYYY-MM-DD" class="form-control" value={{request.form.departure_date}}>
+      </div>
+
+      <div class="form-group">
+        <label>Number of free seats</label>
+        <input type="text" name="free_seats"  class="form-control" value={{request.form.free_seats}}>
+      </div>
+      <div class="form-group">
+        <label>Number of sold seats</label>
+        <input type="text" name="sold_seats" class="form-control" value={{request.form.sold_seats}}>
+      </div>
+
+      <div class="form-group">
+        <label>Flight</label>
+        <select name="flight" class="form-control" method="GET" action="/">
+          <option disabled selected>Select flight</option>
+          {% for x in flights %}
+          <option value="{{x}}">{{x}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>First pilot</label>
+        <select name="pilot1" class="form-control" method="GET" action="/">
+          <option disabled selected>Select pilot</option>
+          {% for x in pilots %}
+          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Second pilot</label>
+        <select name="pilot2" class="form-control" method="GET" action="/">
+          <option disabled selected>Select pilot</option>
+          {% for x in pilots %}
+          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>First crew member</label>
+        <select name="crew1" class="form-control" method="GET" action="/">
+          <option disabled selected>Select crew</option>
+          {% for x in crews %}
+          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Second crew member </label>
+        <select name="crew2" class="form-control" method="GET" action="/">
+          <option disabled selected>Select crew</option>
+          {% for x in crews %}
+          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+  </div>
+</div>
+
+<table class="table table-striped">
+  <tr>
+    <th> Departure ID </th>
+    <th> Date </th>
+    <th> free seats </th>
+    <th> sold seats</th>
+    <th> flightID </th>
+    <th> pilot1ID </th>
+    <th> pilot2ID </th>
+    <th> crew_1ID </th>
+    <th> crew_2ID </th>
+    <th> Edit </th>
+    
+  </tr>
+  {% for x in departures %}
+  <tr>
+    <td> {{x[0]}}</td>
+    <td> {{x[1]}}</td>
+    <td> {{x[2]}}</td>
+    <td> {{x[3]}}</td>
+    <td> {{x[4]}}</td>
+    <td> {{x[5]}}</td>
+    <td> {{x[6]}}</td>
+    <td> {{x[7]}}</td>
+    <td> {{x[8]}}</td>
+    <td> <a href="edit/departure/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+
+  </tr>
+  {% endfor %}
+</table>
+
+
+<script>
+  function show_add() {
+    if(document.getElementById("add").style.display === "block"){
+      document.getElementById("add").style.display = "none";
+    } else {
+      document.getElementById("add").style.display = "block";
+    }
+  }
+</script>
+{% endblock %}

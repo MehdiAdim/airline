@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h1>Edit Employee</h1>
+<form action="" method="POST">
+
+  <div class="form-group">
+    <label>ID</label>
+    <input type="text" name="id" class="form-control" value="{{employee[0]}}" disabled>
+  </div>
+  <div class="form-group">
+    <!-- Date input -->
+    <label>First name</label>
+    <input class="form-control" name="firstname"  type="text" value={{employee[3]}}>
+  </div>
+  <div class="form-group">
+    <!-- Date input -->
+    <label>Surname</label>
+    <input class="form-control" name="surname"  type="text" value={{employee[4]}}>
+  </div>
+
+  <div class="form-group">
+    <!-- Date input -->
+    <label>Adresse</label>
+    <input class="form-control" name="address"  type="text" value={{employee[2]}}>
+  </div>
+
+  <div class="form-group">
+    <!-- Date input -->
+    <label>Salary</label>
+    <input class="form-control" name="salary"  type="text" value={{employee[1]}}>
+  </div>
+
+  <div class="form-group">
+    <!-- Date input -->
+    <label>Flight hours</label>
+    <input class="form-control" name="flight_hours"  type="text" value={{employee[5]}}>
+  </div>
+
+  <div class="form-group">
+    <!-- Date input -->
+    <label>SSN</label>
+    <input class="form-control" name="social_security_number"  type="text" value={{employee[6]}}>
+  </div>
+
+
+
+  <div class="form-group">
+    <label>Role</label>
+    <select name="role" class="form-control" method="GET" action="/">
+      <option selected>{{employee[9]}}</option>
+      {% for x in roles %}
+      <option value="{{x[1]}}">{{x[1]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  
+
+  <button type="submit" class="btn btn-primary">Edit</button>
+</form>
+{% endblock %}

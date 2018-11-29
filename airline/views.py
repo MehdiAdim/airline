@@ -3,6 +3,7 @@ from flaskext.mysql import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 #from passlib.hash import sha256_crypt
 from functools import wraps
+from config import *
 
 
 from .forms import RegisterForm
@@ -16,10 +17,10 @@ app.config.from_object('config')
 mysql = MySQL()
  
 # MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
-app.config['MYSQL_DATABASE_DB'] = 'airline'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_USER'] = MYSQL_DATABASE_USER
+app.config['MYSQL_DATABASE_PASSWORD'] = MYSQL_DATABASE_PASSWORD
+app.config['MYSQL_DATABASE_DB'] = MYSQL_DATABASE_DB
+app.config['MYSQL_DATABASE_HOST'] = MYSQL_DATABASE_HOST
 mysql.init_app(app)
 connection = mysql.connect()
 
@@ -27,7 +28,6 @@ connection = mysql.connect()
 # Index
 @app.route('/')
 def index():
-
 
     return render_template('index.html')
 
@@ -160,10 +160,18 @@ def edit_airport(airportID):
         code = request.form['code']
         city = request.form['city']
 
-        cur.execute(
-            """UPDATE airports 
-            SET name=%s, code=%s, city=%s
-            WHERE airportID=%s""", (name, code, city, airportID))
+        if ( name == '' or code == '' or city ==''):
+            flash('Missing fields', 'danger')
+            return redirect(url_for('edit_airport', airportID=airportID ))
+        try:    
+            cur.execute(
+                """UPDATE airports 
+                SET name=%s, code=%s, city=%s
+                WHERE airportID=%s""", (name, code, city, airportID))
+        except:
+            flash('Check fields format', 'danger')
+            return redirect(url_for('edit_airport', airportID=airportID ))
+
         connection.commit()
         cur.close()
 
@@ -182,14 +190,30 @@ def edit_airport(airportID):
 @is_logged_in
 @is_admin
 def airports():
+
+
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM airports")
+    airports = cur.fetchall()
+    first_time = True
     if request.method == 'POST':
+        first_time = False
         # Get Form Fields
         name = request.form['name']
         code = request.form['code']
         city = request.form['city']
 
+        if(name == '' or code == '' or city == ''):
+            flash('Missing Fields', 'danger')
+            return render_template('airports.html',airports=airports, first_time = first_time)
+        
         cur = connection.cursor()
-        cur.execute("INSERT INTO airports(name, code, city) VALUES(%s, %s, %s)", (name, code, city))
+        try:
+            cur.execute("INSERT INTO airports(name, code, city) VALUES(%s, %s, %s)", (name, code, city))
+        except:
+            flash('Check the fields format', 'danger')
+            return render_template('airports.html',airports=airports, first_time = first_time)
+
         connection.commit()
         cur.close()
 
@@ -197,17 +221,15 @@ def airports():
 
         return redirect(url_for('airports'))
 
-    cur = connection.cursor()
-    result = cur.execute("SELECT * FROM airports")
-    airports = cur.fetchall()
+    
     cur.close()
     if result > 0:
-        return render_template('airports.html',airports=airports)
+        return render_template('airports.html',airports=airports, first_time = first_time)
         
     
     else:
         msg = "No airports found"
-        return render_template('airports.html',msg = msg)
+        return render_template('airports.html',msg = msg,first_time =first_time)
 
 
 
@@ -289,33 +311,50 @@ def links():
 @is_logged_in
 @is_admin
 def aircrafts():
+
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM aircrafts")
+    aircrafts = cur.fetchall()
+    first_time = True
     if request.method == 'POST':
+        first_time = False
         # Get Form Fields
         immatriculation = request.form['immatriculation']
         aircraft_type = request.form['type']
         seats = request.form['seats']
 
+        if(immatriculation=='' or aircraft_type=='' or seats==''):
+            
+            flash('Missing fields', 'danger')
+
+            return render_template('aircrafts.html',aircrafts=aircrafts,first_time = first_time)
+        
+
         cur = connection.cursor()
-        cur.execute("INSERT INTO aircrafts(immatriculation, type, seats) VALUES(%s, %s, %s)",
-            (immatriculation, aircraft_type, seats))
-        connection.commit()
+        try:
+            cur.execute("INSERT INTO aircrafts(immatriculation, type, seats) VALUES(%s, %s, %s)",
+                (immatriculation, aircraft_type, seats))
+            connection.commit()
+        except:
+            flash('Check fields format', 'danger')
+
+            return render_template('aircrafts.html',aircrafts=aircrafts,first_time = first_time)
+
         cur.close()
 
         flash('Aircraft added succefuly', 'success')
 
         return redirect(url_for('aircrafts'))
 
-    cur = connection.cursor()
-    result = cur.execute("SELECT * FROM aircrafts")
-    aircrafts = cur.fetchall()
+    
     cur.close()
     if result > 0:
-        return render_template('aircrafts.html',aircrafts=aircrafts)
+        return render_template('aircrafts.html',aircrafts=aircrafts,first_time = first_time)
         
     
     else:
         msg = "No aircrafts found"
-        return render_template('aircrafts.html',msg = msg)
+        return render_template('aircrafts.html',msg = msg, first_time = first_time)
 
 
 @app.route('/edit/aircraft/<aircraftID>', methods=['GET', 'POST'])
@@ -329,10 +368,19 @@ def edit_aircraft(aircraftID):
         aircraft_type = request.form['type']
         seats = request.form['seats']
 
-        cur.execute(
-            """UPDATE aircrafts 
-            SET immatriculation=%s, type=%s, seats=%s
-            WHERE aircraftID=%s""", (immatriculation, aircraft_type, seats, aircraftID))
+        if (immatriculation =='' or aircraft_type == '' or seats ==''):
+            flash('Missing fields', 'danger')
+            return redirect(url_for('edit_aircraft',aircraftID = aircraftID))
+
+        try:
+            cur.execute(
+                """UPDATE aircrafts 
+                SET immatriculation=%s, type=%s, seats=%s
+                WHERE aircraftID=%s""", (immatriculation, aircraft_type, seats, aircraftID))
+        except:
+            flash('Check the fields format', 'danger')
+            return redirect(url_for('edit_aircraft',aircraftID = aircraftID))
+
         connection.commit()
         cur.close()
 
@@ -347,12 +395,20 @@ def edit_aircraft(aircraftID):
     return render_template('edit_aircraft.html', aircraft=aircraft)
 
 
-@app.route('/add_flight', methods=['GET', 'POST'])
+
+@app.route('/flights', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
-def add_flight():
+def flights():
 
+    first_time = True
     # Create cursor
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM flights")
+    flights = cur.fetchall()
+    cur.close()
+    
+     # Create cursor
     cur = connection.cursor()
 
     cur.execute("SELECT * FROM aircrafts")
@@ -378,6 +434,7 @@ def add_flight():
         list_link.append(str1)
 
     if request.method == 'POST':
+        first_time = False
         # Get Form Fields
         date1 = request.form['date1']
         date2 = request.form['date2']
@@ -389,16 +446,21 @@ def add_flight():
             link = request.form['link'].split(':')[0]
         except:
             flash('Aircraft or link missed', 'danger')
-            return redirect(url_for('add_flight'))
+            return render_template('flights.html',flights = flights, list_aircraft=list_aircrafts, list_link = list_link , first_time=first_time)
 
         print(aircraft)
         print(link)
 
         if date1 == '' or date2 == '' or time1 == '' or time2 == '':
             flash('Complete Form', 'danger')
-            return redirect(url_for('add_flight'))
+            return render_template('flights.html',flights = flights, list_aircraft=list_aircrafts, list_link = list_link , first_time = first_time)
 
-        cur.execute("INSERT INTO flights(date1, date2, departure_time, arrival_time, aircraftID, linkID) VALUES(%s, %s, %s, %s, %s, %s)", (date1, date2, time1, time2, aircraft, link))
+        try:
+            cur.execute("INSERT INTO flights(date1, date2, departure_time, arrival_time, aircraftID, linkID) VALUES(%s, %s, %s, %s, %s, %s)", (date1, date2, time1, time2, aircraft, link))
+        except:
+            flash('Check fields format', 'danger')
+            return render_template('flights.html',flights = flights, list_aircraft=list_aircrafts, list_link = list_link , first_time=first_time)
+
 
         # Commit to DB
         connection.commit()
@@ -406,37 +468,17 @@ def add_flight():
         # Close connection
         cur.close()
 
-        flash('Link added succefuly', 'success')
+        flash('Flight added succefuly', 'success')
 
-        return redirect(url_for('profil'))
-
-
-    return render_template('add_flight.html',list_aircraft=list_aircrafts, list_link = list_link )
+        return redirect(url_for('flights'))
 
 
-
-@app.route('/all_flights')
-@is_logged_in
-@is_admin
-def all_flights():
-
-    # Create cursor
-    cur = connection.cursor()
-    result = cur.execute("SELECT * FROM flights")
-    flights = cur.fetchall()
-    cur.close()
-    if result > 0:
-        return render_template('all_flights.html',flights=flights)
-        
-    
-    else:
-        msg = "No flights found"
-        return render_template('all_flights.html',msg = msg)
+    return render_template('flights.html',flights = flights, list_aircraft=list_aircrafts, list_link = list_link , first_time=first_time)
 
     
 
 
-@app.route('/edit_flight/<string:id>', methods=['GET', 'POST'])
+@app.route('/edit/flight/<string:id>', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
 def edit_flight(id):
@@ -482,17 +524,19 @@ def edit_flight(id):
             link = request.form['link'].split(':')[0]
         except:
             flash('Aircraft or link missed', 'danger')
-            return redirect(url_for('add_flight'))
+            return redirect(url_for('edit_flight', id = id))
 
         print(aircraft)
         print(link)
 
         if date1 == '' or date2 == '' or time1 == '' or time2 == '':
             flash('Complete Form', 'danger')
-            return redirect(url_for('add_flight'))
-
-        cur.execute("UPDATE flights SET date1=%s, date2=%s,departure_time=%s,arrival_time=%s,aircraftID=%s,linkID=%s WHERE flightID=%s", (date1, date2, time1, time2, aircraft, link,id))
-
+            return redirect(url_for('edit_flight',id= id))
+        try:
+            cur.execute("UPDATE flights SET date1=%s, date2=%s,departure_time=%s,arrival_time=%s,aircraftID=%s,linkID=%s WHERE flightID=%s", (date1, date2, time1, time2, aircraft, link,id))
+        except:
+            flash('Check fields format', 'danger')
+            return redirect(url_for('edit_flight',id= id))
         # Commit to DB
         connection.commit()
 
@@ -501,7 +545,7 @@ def edit_flight(id):
 
         flash('Flight updated succefuly', 'success')
 
-        return redirect(url_for('profil'))
+        return redirect(url_for('flights'))
 
 
     return render_template('edit_flight.html',list_aircraft=list_aircrafts, list_link = list_link , edit_one = edit_one )
@@ -550,58 +594,7 @@ def cancel(ticketID):
         return render_template('my-tickets.html',msg = msg)
 
     
-@app.route('/add_employee', methods=['GET', 'POST'])
-@is_logged_in
-@is_admin
-def add_employee():
 
-
-    # Create cursor
-    cur = connection.cursor()
-
-    cur.execute("SELECT * FROM role")
-    data = cur.fetchall()
-    list_role = list(data)
-
-    if request.method == 'POST':
-        # Get Form Fields
-        firstname = request.form['firstname']
-        surname = request.form['surname']
-        address = request.form['address']
-        salary = request.form['salary']
-        flight_hours = request.form['flight_hours']
-        social_security_number = request.form['social_security_number']
-
-        # Create cursor
-        cur = connection.cursor()
-        
-        try :
-            role = request.form['role']
-            
-        except:
-            flash('Role missed', 'danger')
-            return redirect(url_for('add_employee'))
-
-        try:
-            cur.execute("INSERT INTO employees(salary, address, firstname, surname, flight_hours, social_security_number, roleID) VALUES(%s, %s, %s, %s, %s, %s, %s)", (int(salary), address, firstname, surname, int(flight_hours), int(social_security_number), role))
-
-        except :
-            flash('Error, check the form fields', 'danger')
-            return redirect(url_for('add_employee'))
-            
-
-        # Commit to DB
-        connection.commit()
-
-        # Close connection
-        cur.close()
-
-        flash('Employee added succefuly', 'success')
-
-        return redirect(url_for('profil'))
-
-
-    return render_template('add_employee.html',list_role = list_role)
 
 
 
@@ -637,10 +630,25 @@ def edit_role(roleID):
 @is_logged_in
 @is_admin
 def roles():
+
+    first_time = True
+    cur = connection.cursor()
+    result = cur.execute("SELECT * FROM role")
+    roles = cur.fetchall()
+    cur.close()
+    
+    
     if request.method == 'POST':
+        first_time = False
         # Get Form Fields
         name = request.form['role']
-    
+
+        if name == '':
+
+            flash("Role's name missing", 'danger')
+
+            return render_template('roles.html',roles=roles, first_time = first_time)
+
         cur = connection.cursor()
         cur.execute("INSERT INTO role(name) VALUES(%s)", (name))
         connection.commit()
@@ -650,16 +658,14 @@ def roles():
 
         return redirect(url_for('roles'))
 
-    cur = connection.cursor()
-    result = cur.execute("SELECT * FROM role")
-    roles = cur.fetchall()
-    cur.close()
     if result > 0:
-        return render_template('roles.html',roles=roles)
+        return render_template('roles.html',roles=roles, first_time = first_time)
         
     else:
         msg = "No roles found"
-        return render_template('roles.html',msg = msg)
+        return render_template('roles.html',msg = msg, first_time = first_time)
+
+    
 
 
 @app.route('/employees', methods=['GET', 'POST'])
@@ -674,26 +680,34 @@ def employees():
 
     form = EmployeeForm(request.form)
     form.role.choices = roles
-    if request.method == 'POST' and form.validate():
-        firstname = form.firstname.data
-        surname = form.surname.data
-        address = form.address.data
-        salary = form.salary.data
-        flight_hours = form.flight_hours.data
-        social_security_number = form.social_security_number.data
-        role = form.role.data
 
-        
-        cur = connection.cursor()
-        cur.execute("""INSERT INTO employees(salary, address, firstname, surname, flight_hours, social_security_number, roleID)
-            VALUES(%s, %s, %s, %s, %s, %s, %s)""",
-            (salary, address, firstname, surname, flight_hours, social_security_number, role))
-        connection.commit()
-        cur.close()
+    first_time = True
 
-        flash('Role added succefuly', 'success')
+    if request.method == 'POST' :
+        first_time = False
 
-        return redirect(url_for('employees'))
+        if  form.validate():
+            firstname = form.firstname.data
+            surname = form.surname.data
+            address = form.address.data
+            salary = form.salary.data
+            flight_hours = form.flight_hours.data
+            social_security_number = form.social_security_number.data
+            role = form.role.data
+
+            
+
+            
+            cur = connection.cursor()
+            cur.execute("""INSERT INTO employees(salary, address, firstname, surname, flight_hours, social_security_number, roleID)
+                VALUES(%s, %s, %s, %s, %s, %s, %s)""",
+                (salary, address, firstname, surname, flight_hours, social_security_number, role))
+            connection.commit()
+            cur.close()
+
+            flash('Employee added succefuly', 'success')
+
+            return redirect(url_for('employees'))
 
 
     cur = connection.cursor()
@@ -703,9 +717,202 @@ def employees():
     employees = cur.fetchall()
     cur.close()
     if result > 0:
-        return render_template('employees.html',employees=employees, form=form, form_val=form.validate())
+        return render_template('employees.html',employees=employees, form=form, first_time = first_time)
         
     else:
         msg = "No employees found"
         return render_template('employees.html',msg = msg)
 
+
+@app.route('/edit/employee/<id>', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def edit_employee(id):
+
+    
+    if request.method == 'POST':
+        # Get Form Fields
+        firstname = request.form['firstname']
+        surname = request.form['surname']
+        address = request.form['address']
+        salary = request.form['salary']
+        flight_hours = request.form['flight_hours']
+        social_security_number = request.form['social_security_number']
+        role_name = request.form['role']
+
+        cur = connection.cursor()
+        cur.execute("Select roleID FROM role WHERE name = %s",(role_name))
+        id_role = cur.fetchone()[0]
+
+
+        if (firstname == '' or surname == '' or address== '' or  salary=='' or flight_hours == '' or social_security_number==''):
+            
+            flash('Missing fields', 'danger')
+            return redirect(url_for('edit_employee',id=id))
+        try :
+            cur.execute("UPDATE employees SET firstname=%s, surname=%s,address=%s,salary=%s,flight_hours=%s,social_security_number=%s, roleID=%s WHERE employeeID=%s", 
+                    (firstname, surname, address, salary, flight_hours, social_security_number,id_role,id))
+        except :
+            flash('Error in fields', 'danger')
+            return redirect(url_for('edit_employee',id=id))
+            
+
+
+        cur.close()
+
+        flash('Employee edited succefuly', 'success')
+
+        return redirect(url_for('employees'))
+    
+
+    
+
+    cur = connection.cursor()
+    result = cur.execute("""SELECT *
+        FROM employees
+        LEFT JOIN role on role.roleID = employees.roleID
+        WHERE employeeID = %s""",(id))
+    
+    employee = cur.fetchone()
+
+    result = cur.execute("""SELECT *
+        FROM role""")
+    roles = cur.fetchall()
+
+
+    return render_template('edit_employee.html', employee = employee, roles = roles)
+
+@app.route('/departures', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def departures():
+
+    cur = connection.cursor()
+    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "pilot" """)
+    pilots = cur.fetchall()
+    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "crew" """)
+    crews = cur.fetchall()
+    cur.execute(""" select flightID from flights""")
+    flights = cur.fetchall()
+    result = cur.execute("select * from departures")
+    departures = cur.fetchall()
+    
+
+    first_time = True
+
+    if request.method == 'POST' :
+        first_time = False
+
+        departure_date = request.form['departure_date']
+        free_seats = request.form['free_seats']
+        sold_seats = request.form['sold_seats']
+        
+        try:
+            flight = request.form['sold_seats'][1]
+            pilot1 = request.form['pilot1'][1]
+            pilot2 = request.form['pilot2'][1]
+            crew1 = request.form['crew1'][1]
+            crew2 = request.form['crew2'][1]
+        except:
+            flash('Missing fields', 'danger')
+
+            return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
+
+        if(departure_date =='' or free_seats=='' or sold_seats==''):
+            flash('Missing fields', 'danger')
+
+            return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
+            
+
+            
+        cur = connection.cursor()
+
+        try:
+            cur.execute("""INSERT INTO departures(departure_date, free_seats, sold_seats, flightID, pilot1ID, pilot2ID, crew_member1ID, crew_member2ID)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
+                (departure_date, free_seats, sold_seats, flight, pilot1, pilot2, crew1,crew2))
+        except:
+            flash('Check the fields format', 'danger')
+
+            return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
+
+        connection.commit()
+
+        cur.close()
+
+        flash('Departure added succefuly', 'success')
+
+        return redirect(url_for('departures'))
+
+
+    
+    if result > 0:
+        return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
+        
+    else:
+        msg = "No departure found"
+        return render_template('departures.html',pilots=pilots, crews=crews, flights=flights, first_time = first_time)
+    cur.close()
+
+
+
+@app.route('/edit/departure/<id>', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def edit_departure(id):
+
+    cur = connection.cursor()
+    cur.execute("select * from departures where departureID=%s",(id))
+    departure = cur.fetchone()
+    
+    cur = connection.cursor()
+    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "pilot" """)
+    pilots = cur.fetchall()
+    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "crew" """)
+    crews = cur.fetchall()
+    cur.execute(""" select flightID from flights""")
+    flights = cur.fetchall()
+
+    if request.method == 'POST':
+        # Get Form Fields
+        departure_date = request.form['departure_date']
+        free_seats = request.form['free_seats']
+        sold_seats = request.form['sold_seats']
+        
+        try:
+            flight = request.form['sold_seats'][1]
+            pilot1 = request.form['pilot1'][1]
+            pilot2 = request.form['pilot2'][1]
+            crew1 = request.form['crew1'][1]
+            crew2 = request.form['crew2'][1]
+        except:
+            flash('Missing fields', 'danger')
+
+            return redirect(url_for('edit_departure',id=id))
+
+
+        if(departure_date =='' or free_seats=='' or sold_seats==''):
+            flash('Missing Fields', 'danger')
+            return redirect(url_for('edit_departure',id=id))
+
+        try :
+            cur.execute("UPDATE departures SET departure_date=%s, free_seats=%s,sold_seats=%s,flightID=%s,pilot1ID=%s,pilot2ID=%s, crew_member1ID=%s,crew_member2ID=%s WHERE departureID=%s", 
+                    (departure_date, free_seats, sold_seats, flight, pilot1, pilot2,crew1,crew2,id))
+        except :
+            flash('Error in fields', 'danger')
+            return redirect(url_for('edit_departures',id=id))
+            
+
+
+        cur.close()
+
+        flash('Departure edited succefuly', 'success')
+
+        return redirect(url_for('departures'))
+    
+
+    
+
+    
+
+    return render_template('edit_departure.html', departure = departure, flights=flights, pilots=pilots)

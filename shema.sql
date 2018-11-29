@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS `airline`.`departures` (
   `sold_seats` INT NULL,
   `flightID` INT NOT NULL,
   `pilot1ID` INT NOT NULL,
-  `pilot2ID` INT NULL,
+  `pilot2ID` INT NOT NULL,
   `crew_member1ID` INT NOT NULL,
   `crew_member2ID` INT NOT NULL,
   PRIMARY KEY (`departureID`),
@@ -157,22 +157,22 @@ CREATE TABLE IF NOT EXISTS `airline`.`departures` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_departs_pilots1`
     FOREIGN KEY (`pilot1ID`)
-    REFERENCES `airline`.`pilots` (`pilotID`)
+    REFERENCES `airline`.`employees` (`employeeID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_departs_pilots2`
     FOREIGN KEY (`pilot2ID`)
-    REFERENCES `airline`.`pilots` (`pilotID`)
+    REFERENCES `airline`.`employees` (`employeeID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_departs_crew_members1`
     FOREIGN KEY (`crew_member1ID`)
-    REFERENCES `airline`.`crew_members` (`crew_memberID`)
+    REFERENCES `airline`.`employees` (`employeeID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_departs_crew_members2`
     FOREIGN KEY (`crew_member2ID`)
-    REFERENCES `airline`.`crew_members` (`crew_memberID`)
+    REFERENCES `airline`.`employees` (`employeeID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
