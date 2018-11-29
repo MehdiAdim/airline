@@ -3,36 +3,27 @@
 
 
 {% for x in tickets %}
-<div class="">
-    from: {{x[0]}}
-    to: {{x[0]}}
-    departure time:
-    arrival time:
-    price
-    <button>cancel</button>
-</div>
-{% endfor %}
-
 <div class="row">
     <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div class="ticket-title">Paris <span class="glyphicon glyphicon-arrow-right"></span> Amsterdam</div>
+                <div class="ticket-title">{{x.departure_airport.city}} <span class="glyphicon glyphicon-arrow-right"></span> {{x.arrival_airport.city}}</div>
             </div>
             <div class="panel-body">
                 <div class="col-xs-8">
-                    <div class="row">From <span class="city">Paris (CDG)</span> To <span class="city">Amsterdam (AZE)</span></div>
-                    <div class="row">Departure on 01/01/2018 at 10:00 PM</div>
-                    <div class="row">Arrival on 02/01/2018 at 01:00 AM</div>
-                    <div class="row">Total price: 100,00€</div>
+                    <div class="row">From <span class="city">{{x.departure_airport.city}} - {{x.departure_airport.name}} ({{x.departure_airport.code}})</span> To <span class="city">{{x.arrival_airport.city}} - {{x.arrival_airport.name}} ({{x.arrival_airport.code}})</span></div>
+                    <div class="row">Departure on {{x.departure_date.strftime('%Y-%m-%d')}} at {{x.departure_time}}</div>
+                    <div class="row">Arrival on {{x.departure_date.strftime('%Y-%m-%d')}} at {{x.arrival_time}}</div>
+                    <div class="row">Total price: {{x.price}}€</div>
                 </div>
                 <div class="col-xs-4">
-                    <a href="/cancel/01"><button type="button" class="btn btn-default pull-right">Cancel</button></a>
+                    <a href="/cancel/{{x.ticketID}}"><button type="button" class="btn btn-default pull-right">Cancel</button></a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endfor %}
 
 
 <style>

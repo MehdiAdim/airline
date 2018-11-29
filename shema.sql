@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS `airline`.`employees` (
   `flight_hours` DECIMAL(9,2) NOT NULL,
   `social_security_number` INT NOT NULL,
   `roleID` INT NOT NULL,
+  `license` VARCHAR(20),
   PRIMARY KEY (`employeeID`),
    INDEX `fk_role_idx` (`roleID` ASC) ,
   CONSTRAINT `fk_role`
@@ -185,18 +186,18 @@ CREATE TABLE IF NOT EXISTS `airline`.`tickets` (
   `ticketID` INT NOT NULL AUTO_INCREMENT,
   `date_of_issue` DATETIME NOT NULL,
   `price` DECIMAL(9,2) NOT NULL,
-  `departs_iddeparts` INT NOT NULL,
-  `clients_clientID` INT NOT NULL,
+  `departureID` INT NOT NULL,
+  `clientID` INT NOT NULL,
   PRIMARY KEY (`ticketID`),
-  INDEX `fk_tickets_departs1_idx` (`departs_iddeparts` ASC) ,
-  INDEX `fk_tickets_clients1_idx` (`clients_clientID` ASC) ,
+  INDEX `fk_tickets_departs1_idx` (`departureID` ASC) ,
+  INDEX `fk_tickets_clients1_idx` (`clientID` ASC) ,
   CONSTRAINT `fk_tickets_departs1`
-    FOREIGN KEY (`departs_iddeparts`)
+    FOREIGN KEY (`departureID`)
     REFERENCES `airline`.`departures` (`departureID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_tickets_clients1`
-    FOREIGN KEY (`clients_clientID`)
+    FOREIGN KEY (`clientID`)
     REFERENCES `airline`.`clients` (`clientID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)

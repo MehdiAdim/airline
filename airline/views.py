@@ -180,7 +180,7 @@ def edit_airport(airportID):
         return redirect(url_for('airports'))
 
     cur.execute(
-        """SELECT * from airports 
+        """SELECT * FROM airports 
         WHERE airportID=%s""", (airportID))
     airport = cur.fetchone()
     return render_template('edit_airport.html', airport=airport)
@@ -389,7 +389,7 @@ def edit_aircraft(aircraftID):
         return redirect(url_for('aircrafts'))
 
     cur.execute(
-        """SELECT * from aircrafts 
+        """SELECT * FROM aircrafts 
         WHERE aircraftID=%s""", (aircraftID))
     aircraft = cur.fetchone()
     return render_template('edit_aircraft.html', aircraft=aircraft)
@@ -551,13 +551,34 @@ def edit_flight(id):
     return render_template('edit_flight.html',list_aircraft=list_aircrafts, list_link = list_link , edit_one = edit_one )
 
 
+def strfdelta(tdelta, fmt):
+    d = {"days": tdelta.days}
+    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    if d["hours"] > 12:
+        d["hours"] -= 12
+        d["AMPM"] = "PM"
+    else:
+        d["AMPM"] = "AM"
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    return fmt.format(**d)
+
+
 @app.route('/my-tickets')
 @is_logged_in
 def my_tickets():
 
     cur = connection.cursor()
     result = cur.execute("""
-        SELECT t.* FROM tickets t
+        SELECT t.ticketID, t.date_of_issue, t.price,
+            f.departure_time, f.arrival_time,
+            d.departure_date,
+            da.*, aa.*
+        FROM tickets t
+        LEFT JOIN departures d ON d.departureID = t.departureID
+        LEFT JOIN flights f ON f.flightID = d.flightID
+        LEFT JOIN links l ON l.linkID = f.linkID
+        LEFT JOIN airports da ON da.airportID = l.departure_airportID
+        LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID
         LEFT JOIN clients c ON t.clientID = c.clientID
         WHERE c.username=%s""",(session['username']))
         # Sort by date
@@ -565,11 +586,33 @@ def my_tickets():
         #
     tickets = cur.fetchall()
     cur.close()
+    formated_tickets = []
+    for t in tickets:
+        ticket = {
+            'ticketID': t[0],
+            'date_of_issue': t[1],
+            'price': t[2],
+            'departure_time': strfdelta(t[3], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
+            'arrival_time': strfdelta(t[4], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
+            'departure_date': t[5],
+            'departure_airport':{
+                'name': t[7],
+                'code': t[8],
+                'city': t[9],
+            },
+            'arrival_airport':{
+                'name': t[11],
+                'code': t[12],
+                'city': t[13],
+            }
+        }
+        formated_tickets.append(ticket)
+
     if result > 0:
         for t in tickets:
             #separate date / time
             pass
-        return render_template('my-tickets.html',tickets=tickets)
+        return render_template('my-tickets.html',tickets=formated_tickets)
         
     else:
         msg = "No tickets found"
@@ -583,6 +626,7 @@ def cancel(ticketID):
     result = cur.execute("""
         DELETE FROM tickets
         WHERE ticketID = %s""",(ticketID))
+    connection.commit()
     tickets = cur.fetchall()
     cur.close()
     if result > 0:
@@ -620,7 +664,7 @@ def edit_role(roleID):
         return redirect(url_for('roles'))
 
     cur.execute(
-        """SELECT * from role
+        """SELECT * FROM role
         WHERE roleID=%s""", (roleID))
     role = cur.fetchone()
     return render_template('edit_role.html', role=role)
@@ -694,9 +738,6 @@ def employees():
             flight_hours = form.flight_hours.data
             social_security_number = form.social_security_number.data
             role = form.role.data
-
-            
-
             
             cur = connection.cursor()
             cur.execute("""INSERT INTO employees(salary, address, firstname, surname, flight_hours, social_security_number, roleID)
@@ -721,15 +762,13 @@ def employees():
         
     else:
         msg = "No employees found"
-        return render_template('employees.html',msg = msg)
+        return render_template('employees.html',msg = msg, form=form, first_time = first_time)
 
 
 @app.route('/edit/employee/<id>', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
 def edit_employee(id):
-
-    
     if request.method == 'POST':
         # Get Form Fields
         firstname = request.form['firstname']
@@ -752,11 +791,10 @@ def edit_employee(id):
         try :
             cur.execute("UPDATE employees SET firstname=%s, surname=%s,address=%s,salary=%s,flight_hours=%s,social_security_number=%s, roleID=%s WHERE employeeID=%s", 
                     (firstname, surname, address, salary, flight_hours, social_security_number,id_role,id))
+            connection.commit()        
         except :
             flash('Error in fields', 'danger')
             return redirect(url_for('edit_employee',id=id))
-            
-
 
         cur.close()
 
@@ -786,15 +824,20 @@ def edit_employee(id):
 @is_logged_in
 @is_admin
 def departures():
-
     cur = connection.cursor()
-    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "pilot" """)
+    cur.execute("""SELECT employeeID,firstname,surname
+    FROM employees
+    left join role on employees.roleID = role.roleID
+    WHERE role.name = "pilot" """)
     pilots = cur.fetchall()
-    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "crew" """)
+    cur.execute("""SELECT employeeID,firstname,surname
+    FROM employees
+    left join role on employees.roleID = role.roleID
+    WHERE role.name = "crew" """)
     crews = cur.fetchall()
-    cur.execute(""" select flightID from flights""")
+    cur.execute(""" SELECT * FROM flights""")
     flights = cur.fetchall()
-    result = cur.execute("select * from departures")
+    result = cur.execute("SELECT * FROM departures")
     departures = cur.fetchall()
     
 
@@ -808,11 +851,11 @@ def departures():
         sold_seats = request.form['sold_seats']
         
         try:
-            flight = request.form['sold_seats'][1]
-            pilot1 = request.form['pilot1'][1]
-            pilot2 = request.form['pilot2'][1]
-            crew1 = request.form['crew1'][1]
-            crew2 = request.form['crew2'][1]
+            flight = request.form['flight']
+            pilot1 = request.form['pilot1']
+            pilot2 = request.form['pilot2']
+            crew1 = request.form['crew1']
+            crew2 = request.form['crew2']
         except:
             flash('Missing fields', 'danger')
 
@@ -827,14 +870,19 @@ def departures():
             
         cur = connection.cursor()
 
-        try:
-            cur.execute("""INSERT INTO departures(departure_date, free_seats, sold_seats, flightID, pilot1ID, pilot2ID, crew_member1ID, crew_member2ID)
+        #try:
+        print("pilot1ID =====")
+        print(pilot1)
+        print("pilot2ID =====")
+        print(pilot2)
+        cur.execute("""INSERT INTO departures(departure_date, free_seats, sold_seats, flightID, pilot1ID, pilot2ID, crew_member1ID, crew_member2ID)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
                 (departure_date, free_seats, sold_seats, flight, pilot1, pilot2, crew1,crew2))
-        except:
-            flash('Check the fields format', 'danger')
+        # except :
+            
+        #     flash('Check the fields format', 'danger')
 
-            return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
+        #     return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
 
         connection.commit()
 
@@ -860,17 +908,22 @@ def departures():
 @is_logged_in
 @is_admin
 def edit_departure(id):
-
     cur = connection.cursor()
-    cur.execute("select * from departures where departureID=%s",(id))
+    cur.execute("SELECT * FROM departures where departureID=%s",(id))
     departure = cur.fetchone()
     
     cur = connection.cursor()
-    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "pilot" """)
+    cur.execute("""SELECT employeeID,firstname,surname
+    FROM employees
+    LEFT JOIN role on employees.roleID = role.roleID
+    WHERE role.name = "pilot" """)
     pilots = cur.fetchall()
-    cur.execute("""select employeeID,firstname,surname from employees left join role on employees.roleID = role.roleID Where role.name = "crew" """)
+    cur.execute("""SELECT employeeID,firstname,surname
+    FROM employees
+    LEFT JOIN role on employees.roleID = role.roleID
+    WHERE role.name = "crew" """)
     crews = cur.fetchall()
-    cur.execute(""" select flightID from flights""")
+    cur.execute("""SELECT flightID FROM flights""")
     flights = cur.fetchall()
 
     if request.method == 'POST':
@@ -910,9 +963,4 @@ def edit_departure(id):
 
         return redirect(url_for('departures'))
     
-
-    
-
-    
-
     return render_template('edit_departure.html', departure = departure, flights=flights, pilots=pilots)

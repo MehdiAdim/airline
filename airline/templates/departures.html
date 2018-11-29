@@ -26,7 +26,7 @@
         <select name="flight" class="form-control" method="GET" action="/">
           <option disabled selected>Select flight</option>
           {% for x in flights %}
-          <option value="{{x}}">{{x}}</option>
+          <option value="{{x[0]}}">{{x[0]}} : {{x[1]}}</option>
           {% endfor %}
         </select>
       </div>
@@ -36,7 +36,7 @@
         <select name="pilot1" class="form-control" method="GET" action="/">
           <option disabled selected>Select pilot</option>
           {% for x in pilots %}
-          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          <option value="{{x[0]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
           {% endfor %}
         </select>
       </div>
@@ -45,7 +45,7 @@
         <select name="pilot2" class="form-control" method="GET" action="/">
           <option disabled selected>Select pilot</option>
           {% for x in pilots %}
-          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          <option value="{{x[0]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
           {% endfor %}
         </select>
       </div>
@@ -54,7 +54,7 @@
         <select name="crew1" class="form-control" method="GET" action="/">
           <option disabled selected>Select crew</option>
           {% for x in crews %}
-          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          <option value="{{x[0]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
           {% endfor %}
         </select>
       </div>
@@ -63,7 +63,7 @@
         <select name="crew2" class="form-control" method="GET" action="/">
           <option disabled selected>Select crew</option>
           {% for x in crews %}
-          <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+          <option value="{{x[0]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
           {% endfor %}
         </select>
       </div>
