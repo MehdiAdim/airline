@@ -28,39 +28,40 @@
             <div class="form-group">
                 {{render_field(form.role, class_="form-control")}}
             </div>
-            
+
 
             <button type="submit" class="btn btn-primary">Add</button>
         </form>
     </div>
 </div>
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <tr>
+            <th> Firstname</th>
+            <th> Surname</th>
+            <th> Address </th>
+            <th> Salary </th>
+            <th> Hours of flight </th>
+            <th> SSN </th>
+            <th> Role </th>
+            <th> Edit </th>
+        </tr>
+        {% for x in employees %}
 
-<table class="table table-striped">
-    <tr>
-        <th> Firstname</th>
-        <th> Surname</th>
-        <th> Address </th>
-        <th> Salary </th>
-        <th> Hours of flight </th>
-        <th> SSN </th>
-        <th> Role </th>
-        <th> Edit </th>
-    </tr>
-    {% for x in employees %}
-    
-    <tr>
-        <td> {{x[3]}}</td>
-        <td> {{x[4]}}</td>
-        <td> {{x[2]}}</td>
-        <td> {{x[1]}}</td>
-        <td> {{x[5]}}</td>
-        <td> {{x[6]}}</td>
-        <td> {{x[9]}}</td>
-        <td> <a href="edit/employee/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+        <tr>
+            <td> {{x[3]}}</td>
+            <td> {{x[4]}}</td>
+            <td> {{x[2]}}</td>
+            <td> {{x[1]}}</td>
+            <td> {{x[5]}}</td>
+            <td> {{x[6]}}</td>
+            <td> {{x[9]}}</td>
+            <td> <a href="edit/employee/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
 
-    </tr>
-    {% endfor %}
-</table>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
 
 <script>
@@ -71,6 +72,6 @@
             document.getElementById("add").style.display = "block";
         }
     }
-    
+
 </script>
 {% endblock %}

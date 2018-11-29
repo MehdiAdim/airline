@@ -23,31 +23,32 @@
     </form>
   </div>
 </div>
+<div class="panel panel-default">
+  <table class="table table-striped">
+    <tr>
+      <th> Aircraft ID </th>
+      <th> Immatriculation</th>
+      <th> Type </th>
+      <th> Number of seats </th>
+      <th> Edit </th>
+    </tr>
+    {% for x in aircrafts %}
+    <tr>
+      <td> {{x[0]}}</td>
+      <td> {{x[1]}}</td>
+      <td> {{x[2]}}</td>
+      <td> {{x[3]}}</td>
+      <td> <a href="edit/aircraft/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
 
-<table class="table table-striped">
-  <tr>
-    <th> Aircraft ID </th>
-    <th> Immatriculation</th>
-    <th> Type </th>
-    <th> Number of seats </th>
-    <th> Edit </th>
-  </tr>
-  {% for x in aircrafts %}
-  <tr>
-    <td> {{x[0]}}</td>
-    <td> {{x[1]}}</td>
-    <td> {{x[2]}}</td>
-    <td> {{x[3]}}</td>
-    <td> <a href="edit/aircraft/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
-
-  </tr>
-  {% endfor %}
-</table>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 
 
 <script>
   function show_add() {
-    if(document.getElementById("add").style.display === "block"){
+    if (document.getElementById("add").style.display === "block") {
       document.getElementById("add").style.display = "none";
     } else {
       document.getElementById("add").style.display = "block";

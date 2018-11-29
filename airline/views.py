@@ -29,14 +29,13 @@ connection = mysql.connect()
 # Index
 @app.route('/')
 def index():
-
     return render_template('index.html')
 
 
 # About
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('index.html')
 
 
 
@@ -100,7 +99,7 @@ def login():
                 session['admin'] = True
 
             flash('You are now logged in', 'success')
-            return redirect(url_for('profil'))
+            return redirect(url_for('home'))
             
             # Close connection
             cur.close()
@@ -131,16 +130,16 @@ def is_admin(f):
             return f(*args, **kwargs)
         else:
             flash('Unauthorized, Only for admin', 'danger')
-            return redirect(url_for('profil'))
+            return redirect(url_for('home'))
     return wrap
 
 
 
-@app.route('/profil')
+@app.route('/home')
 @is_logged_in
-def profil():
+def home():
     
-    return render_template('profil.html')
+    return render_template('home.html')
 
 
 

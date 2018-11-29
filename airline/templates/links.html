@@ -27,24 +27,26 @@
         </form>
     </div>
 </div>
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <tr>
+            <th> link ID </th>
+            <th> Departure</th>
+            <th> Arrival </th>
+            <th> Edit </th>
+        </tr>
+        {% for x in links %}
+        <tr>
+            <td> {{x[0]}}</td>
+            <td> {{x[4]}} - {{x[2]}} ({{x[3]}})</td>
+            <td> {{x[8]}} - {{x[6]}} ({{x[7]}})</td>
+            <td> <a href="edit/link/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
 
-<table class="table table-striped">
-    <tr>
-        <th> link ID </th>
-        <th> Departure</th>
-        <th> Arrival </th>
-        <th> Edit </th>
-    </tr>
-    {% for x in links %}
-    <tr>
-        <td> {{x[0]}}</td>
-        <td> {{x[4]}} - {{x[2]}} ({{x[3]}})</td>
-        <td> {{x[8]}} - {{x[6]}} ({{x[7]}})</td>
-        <td> <a href="edit/link/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
-    </tr>
-    {% endfor %}
-</table>
 
 
 <script>
