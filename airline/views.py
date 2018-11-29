@@ -870,19 +870,15 @@ def departures():
             
         cur = connection.cursor()
 
-        #try:
-        print("pilot1ID =====")
-        print(pilot1)
-        print("pilot2ID =====")
-        print(pilot2)
-        cur.execute("""INSERT INTO departures(departure_date, free_seats, sold_seats, flightID, pilot1ID, pilot2ID, crew_member1ID, crew_member2ID)
+        try:
+            cur.execute("""INSERT INTO departures(departure_date, free_seats, sold_seats, flightID, pilot1ID, pilot2ID, crew_member1ID, crew_member2ID)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
                 (departure_date, free_seats, sold_seats, flight, pilot1, pilot2, crew1,crew2))
-        # except :
+        except :
             
-        #     flash('Check the fields format', 'danger')
+            flash('Check the fields format', 'danger')
 
-        #     return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
+            return render_template('departures.html',pilots=pilots, crews=crews, flights=flights,departures=departures, first_time = first_time)
 
         connection.commit()
 
@@ -964,3 +960,67 @@ def edit_departure(id):
         return redirect(url_for('departures'))
     
     return render_template('edit_departure.html', departure = departure, flights=flights, pilots=pilots)
+
+
+
+@app.route('/search-flight', methods=['GET', 'POST'])
+@is_logged_in
+def search_flight():
+    cur = connection.cursor()
+    cur.execute("SELECT DISTINCT city FROM airports")
+    cities = cur.fetchall()
+    cur.close()
+
+    if request.method == 'POST':
+        # Get Form Fields
+        departure_city = request.form['departure_city']
+        arrival_city = request.form['arrival_city']
+        print(departure_city)
+        print(arrival_city)
+        cur = connection.cursor()
+        result = cur.execute("""
+            SELECT f.departure_time, f.arrival_time,
+                d.departure_date,
+                da.*, aa.*,
+                d.departureID
+            FROM departures d
+            LEFT JOIN flights f ON f.flightID = d.flightID
+            LEFT JOIN links l ON l.linkID = f.linkID
+            LEFT JOIN airports da ON da.airportID = l.departure_airportID
+            LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID
+            WHERE da.city=%s AND aa.city=%s""",(departure_city, arrival_city))
+
+
+        departures = cur.fetchall()
+
+        formated_departures = []
+        for d in departures:
+            departure = {
+                'departureID': d[11],
+                'price': 555,
+                'departure_time': strfdelta(d[0], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
+                'arrival_time': strfdelta(d[1], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
+                'departure_date': d[2],
+                'departure_airport':{
+                    'name': d[4],
+                    'code': d[5],
+                    'city': d[6],
+                },
+                'arrival_airport':{
+                    'name': d[8],
+                    'code': d[9],
+                    'city': d[10],
+                }
+            }
+            formated_departures.append(departure)
+        
+        cur.close()
+        
+        if result > 0:
+            return render_template('search-flight.html',
+                cities = sorted(cities), departures=formated_departures, departure=departure_city, arrival=arrival_city)
+        else:
+            msg = "No flights were found"
+            return render_template('search-flight.html', cities = sorted(cities), msg=msg, departure=departure_city, arrival=arrival_city)
+
+    return render_template('search-flight.html', cities = sorted(cities))
