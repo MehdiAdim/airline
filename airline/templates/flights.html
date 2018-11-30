@@ -70,6 +70,7 @@
       <th> Departure time </th>
       <th> Arrival Time </th>
       <th> Edit </th>
+      <th> Delete </th>
     </tr>
 
     {% for x in flights %}
@@ -82,6 +83,7 @@
       <td> {{x[3]}}</td>
       <td> {{x[4]}}</td>
       <td> <a href="edit/flight/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+      <td> <a href="delete/flight/{{x[0]}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
     </tr>
     {% endfor %}
   </table>

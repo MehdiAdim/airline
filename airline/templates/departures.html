@@ -86,6 +86,7 @@
       <th> crew_1ID </th>
       <th> crew_2ID </th>
       <th> Edit </th>
+      <th> Delete </th>
 
     </tr>
     {% for x in departures %}
@@ -100,6 +101,8 @@
       <td> {{x[7]}}</td>
       <td> {{x[8]}}</td>
       <td> <a href="edit/departure/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+      <td> <a href="delete/departure/{{x[0]}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
+
 
     </tr>
     {% endfor %}

@@ -1,3 +1,4 @@
+DROP DATABASE 'airline';
 CREATE DATABASE  IF NOT EXISTS `airline` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `airline`;
 -- MySQL dump 10.13  Distrib 8.0.12, for macos10.13 (x86_64)
@@ -93,11 +94,11 @@ CREATE TABLE `departures` (
   KEY `fk_departs_pilots2_idx` (`pilot2ID`),
   KEY `fk_departs_crew_members1_idx` (`crew_member1ID`),
   KEY `fk_departs_crew_members2_idx` (`crew_member2ID`),
-  CONSTRAINT `fk_departs_crew_members1` FOREIGN KEY (`crew_member1ID`) REFERENCES `employees` (`employeeid`),
-  CONSTRAINT `fk_departs_crew_members2` FOREIGN KEY (`crew_member2ID`) REFERENCES `employees` (`employeeid`),
-  CONSTRAINT `fk_departs_pilots1` FOREIGN KEY (`pilot1ID`) REFERENCES `employees` (`employeeid`),
-  CONSTRAINT `fk_departs_pilots2` FOREIGN KEY (`pilot2ID`) REFERENCES `employees` (`employeeid`),
-  CONSTRAINT `fk_departs_vols1` FOREIGN KEY (`flightID`) REFERENCES `flights` (`flightid`)
+  CONSTRAINT `fk_departs_crew_members1` FOREIGN KEY (`crew_member1ID`) REFERENCES `employees` (`employeeid`) ON DELETE CASCADE,
+  CONSTRAINT `fk_departs_crew_members2` FOREIGN KEY (`crew_member2ID`) REFERENCES `employees` (`employeeid`) ON DELETE CASCADE,
+  CONSTRAINT `fk_departs_pilots1` FOREIGN KEY (`pilot1ID`) REFERENCES `employees` (`employeeid`)ON DELETE CASCADE,
+  CONSTRAINT `fk_departs_pilots2` FOREIGN KEY (`pilot2ID`) REFERENCES `employees` (`employeeid`)ON DELETE CASCADE,
+  CONSTRAINT `fk_departs_vols1` FOREIGN KEY (`flightID`) REFERENCES `flights` (`flightid`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -119,7 +120,7 @@ CREATE TABLE `employees` (
   `roleID` int(11) NOT NULL,
   PRIMARY KEY (`employeeID`),
   KEY `fk_role_idx` (`roleID`),
-  CONSTRAINT `fk_role` FOREIGN KEY (`roleID`) REFERENCES `role` (`roleid`)
+  CONSTRAINT `fk_role` FOREIGN KEY (`roleID`) REFERENCES `role` (`roleid`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -143,8 +144,8 @@ CREATE TABLE `flights` (
   PRIMARY KEY (`flightID`),
   KEY `fk_vols_appareils1_idx` (`aircraftID`),
   KEY `fk_vols_liaisons1_idx` (`linkID`),
-  CONSTRAINT `fk_vols_appareils1` FOREIGN KEY (`aircraftID`) REFERENCES `aircrafts` (`aircraftid`),
-  CONSTRAINT `fk_vols_liaisons1` FOREIGN KEY (`linkID`) REFERENCES `links` (`linkid`)
+  CONSTRAINT `fk_vols_appareils1` FOREIGN KEY (`aircraftID`) REFERENCES `aircrafts` (`aircraftid`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vols_liaisons1` FOREIGN KEY (`linkID`) REFERENCES `links` (`linkid`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -162,8 +163,8 @@ CREATE TABLE `links` (
   PRIMARY KEY (`linkID`),
   KEY `fk_liaisons_airports1_idx` (`departure_airportID`),
   KEY `fk_liaisons_airports2_idx` (`arrival_airportID`),
-  CONSTRAINT `fk_liaisons_airports1` FOREIGN KEY (`departure_airportID`) REFERENCES `airports` (`airportid`),
-  CONSTRAINT `fk_liaisons_airports2` FOREIGN KEY (`arrival_airportID`) REFERENCES `airports` (`airportid`)
+  CONSTRAINT `fk_liaisons_airports1` FOREIGN KEY (`departure_airportID`) REFERENCES `airports` (`airportid`)ON DELETE CASCADE,
+  CONSTRAINT `fk_liaisons_airports2` FOREIGN KEY (`arrival_airportID`) REFERENCES `airports` (`airportid`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -197,8 +198,8 @@ CREATE TABLE `tickets` (
   PRIMARY KEY (`ticketID`),
   KEY `fk_tickets_departs1_idx` (`departureID`),
   KEY `fk_tickets_clients1_idx` (`clientID`),
-  CONSTRAINT `client` FOREIGN KEY (`clientID`) REFERENCES `clients` (`clientid`),
-  CONSTRAINT `departure` FOREIGN KEY (`departureID`) REFERENCES `departures` (`departureid`)
+  CONSTRAINT `client` FOREIGN KEY (`clientID`) REFERENCES `clients` (`clientid`) ON DELETE CASCADE,
+  CONSTRAINT `departure` FOREIGN KEY (`departureID`) REFERENCES `departures` (`departureid`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
