@@ -4,7 +4,7 @@
 - Python 3.x
 - Mysql 5.7 or higher 
 
-### Guide d'installation
+### Quick start
     
     -  Vous pouvez cloner le projet depuis github.
     -  Vous pouvez aussi utiliser le dossier airline fournit avec le fichier zip.
