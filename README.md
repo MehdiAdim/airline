@@ -25,8 +25,8 @@
        MYSQL_DATABASE_PASSWORD 
        MYSQL_DATABASE_HOST
     
-    3- Ensuite importez et exécutez le fichier schema.sql dans votre application de gestion de SGBD MYSQL (phpMyAdmin or Mysql workbench)
-      pour la creation des tables et l'insertion de donnees.
+    3- Ensuite importez et exécutez le fichier schema.sql dans votre application de gestion de SGBD MYSQL 
+       (phpMyAdmin or Mysql workbench) pour la creation des tables et l'insertion de donnees.
     
     4- Finalement demarrez l'application web :
     $  python run.py
