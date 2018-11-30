@@ -295,7 +295,6 @@ def links():
             (departure, arrival))
         connection.commit()
         cur.close()
-        print('ok')
         flash('Link added succefuly', 'success')
 
         return redirect(url_for('links'))
@@ -308,7 +307,6 @@ def links():
         LEFT JOIN airports AS aa on aa.airportID = l.arrival_airportID""")
     links = cur.fetchall()
     cur.close()
-    print(links)
     cur = connection.cursor()
     result = cur.execute("SELECT * FROM airports")
     airports = cur.fetchall()
@@ -842,7 +840,6 @@ def edit_employee(id):
             flash('Missing fields', 'danger')
             return redirect(url_for('edit_employee',id=id))
         try :
-            print(address)
             cur.execute("""UPDATE employees 
                 SET firstname=%s, surname=%s,address=%s,salary=%s,flight_hours=%s,social_security_number=%s, roleID=%s WHERE employeeID=%s""", 
                 (firstname, surname, address, salary, flight_hours, social_security_number,id_role,id))
