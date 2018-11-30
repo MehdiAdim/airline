@@ -842,6 +842,7 @@ def edit_employee(id):
             flash('Missing fields', 'danger')
             return redirect(url_for('edit_employee',id=id))
         try :
+            print(address)
             cur.execute("""UPDATE employees 
                 SET firstname=%s, surname=%s,address=%s,salary=%s,flight_hours=%s,social_security_number=%s, roleID=%s WHERE employeeID=%s""", 
                 (firstname, surname, address, salary, flight_hours, social_security_number,id_role,id))
