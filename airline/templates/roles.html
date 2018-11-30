@@ -19,13 +19,16 @@
     <tr>
       <th> Role ID </th>
       <th> Name</th>
-      <th> Role</th>
+      <th> Edit</th>
+      <th> Delete</th>
     </tr>
     {% for x in roles %}
     <tr>
       <td> {{x[0]}}</td>
       <td> {{x[1]}}</td>
       <td> <a href="edit/role/{{x[0]}}" class="btn btn-default pullright">Edit</a></td>
+      <td> <a href="delete/role/{{x[0]}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
+
 
     </tr>
     {% endfor %}

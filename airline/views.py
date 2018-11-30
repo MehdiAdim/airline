@@ -25,6 +25,17 @@ app.config['MYSQL_DATABASE_HOST'] = MYSQL_DATABASE_HOST
 mysql.init_app(app)
 connection = mysql.connect()
 
+# Create admin if not exist
+cur = connection.cursor()
+result = cur.execute(""" SELECT * FROM clients
+            WHERE username = 'admin' and password = 'admin'""")
+            
+if result == 0 :
+    cur.execute(""" INSERT INTO clients
+            VALUES (1,'Antoine','Adim','Lyon 9eme n : 89','admin@airline.com','admin','admin')""")
+    connection.commit()
+    cur.close()
+
 
 # Index
 @app.route('/')
@@ -1168,14 +1179,47 @@ def profile():
             flash('Check the fields format', 'danger')
             return render_template('profile.html',user =user, first_time = first_time)
         
+        connection.commit()
+        
+
         cur.execute("""SELECT * FROM clients 
         WHERE username=%s""",(session['username']))
     
         user = cur.fetchone()
-         
+        
+        cur.close()
         return render_template('profile.html',user =user, first_time = True)
 
 
 
     return render_template('profile.html',user =user, first_time = first_time)
+
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('home'))
+
+
+
+@app.route('/delete/<entity>/<id>')
+@is_logged_in
+@is_admin
+def delete_entity(id,entity):
+
+    cur = connection.cursor()
+
+    table = entity if entity == 'role' else entity + "s"
+    url = entity + "s"
+    entityID = entity + "ID"
+    
+    try:
+        cur.execute("""Delete FROM """+table+"""
+        WHERE """+entityID+"""=%s""",(id))
+        connection.commit()
+    except:
+        return redirect(url_for("home"))
+    cur.close()
+    
+    return redirect(url_for(url))
 

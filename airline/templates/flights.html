@@ -81,6 +81,7 @@
       <th> Arrival time </th>
       <th> Base price</th>
       <th> Edit </th>
+      <th> Delete </th>
     </tr>
 
     {% for x in flights %}
@@ -94,6 +95,7 @@
       <td> {{x.arrival_time}} {% if x.day_plus_1 %} (Next day) {% endif %}</td>
       <td> {{x.base_price}}€</td>
       <td> <a href="edit/flight/{{x.flightID}}" class="btn btn-default pullright"> Edit</a></td>
+      <td> <a href="delete/flight/{{x.flightID}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
     </tr>
     {% endfor %}
   </table>

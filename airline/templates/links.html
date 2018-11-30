@@ -34,6 +34,7 @@
             <th> Departure</th>
             <th> Arrival </th>
             <th> Edit </th>
+            <th> Delete </th>
         </tr>
         {% for x in links %}
         <tr>
@@ -41,6 +42,7 @@
             <td> {{x[4]}} - {{x[2]}} ({{x[3]}})</td>
             <td> {{x[8]}} - {{x[6]}} ({{x[7]}})</td>
             <td> <a href="edit/link/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+            <td> <a href="delete/link/{{x[0]}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
 
         </tr>
         {% endfor %}

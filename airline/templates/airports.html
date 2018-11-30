@@ -31,6 +31,8 @@
       <th> Code </th>
       <th> City </th>
       <th> Edit </th>
+      <th> Delete </th>
+
     </tr>
     {% for x in airports %}
     <tr>
@@ -39,6 +41,7 @@
       <td> {{x[2]}}</td>
       <td> {{x[3]}}</td>
       <td> <a href="edit/airport/{{x[0]}}" class="btn btn-default btn-sm pullright"> Edit</a></td>
+      <td> <a href="delete/airport/{{x[0]}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
 
     </tr>
     {% endfor %}

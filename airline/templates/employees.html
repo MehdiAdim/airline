@@ -45,6 +45,7 @@
             <th> SSN </th>
             <th> Role </th>
             <th> Edit </th>
+            <th> Delete </th>
         </tr>
         {% for x in employees %}
 
@@ -57,6 +58,8 @@
             <td> {{x[6]}}</td>
             <td> {{x[9]}}</td>
             <td> <a href="edit/employee/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+            <td> <a href="delete/employee/{{x[0]}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
+
 
         </tr>
         {% endfor %}
