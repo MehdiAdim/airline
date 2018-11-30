@@ -596,7 +596,8 @@ def my_tickets():
         SELECT t.ticketID, t.date_of_issue, t.price,
             f.departure_time, f.arrival_time,
             d.departure_date,
-            da.*, aa.*
+            da.*, aa.*,
+            f.day_plus_1
         FROM tickets t
         LEFT JOIN departures d ON d.departureID = t.departureID
         LEFT JOIN flights f ON f.flightID = d.flightID
@@ -612,6 +613,7 @@ def my_tickets():
     cur.close()
     formated_tickets = []
     for t in tickets:
+        arrival_date = datetime.datetime.strptime('2018-10-10',"%Y-%m-%d") + datetime.timedelta(days=t[14])
         ticket = {
             'ticketID': t[0],
             'date_of_issue': t[1],
@@ -619,6 +621,7 @@ def my_tickets():
             'departure_time': strfdelta(t[3], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
             'arrival_time': strfdelta(t[4], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
             'departure_date': t[5],
+            'arrival_date': arrival_date,
             'departure_airport':{
                 'name': t[7],
                 'code': t[8],
@@ -1022,7 +1025,8 @@ def search_flight():
                 d.departure_date,
                 da.*, aa.*,
                 d.departureID,
-                f.base_price
+                f.base_price,
+                f.day_plus_1
             FROM departures d
             LEFT JOIN flights f ON f.flightID = d.flightID
             LEFT JOIN links l ON l.linkID = f.linkID
@@ -1031,17 +1035,19 @@ def search_flight():
             WHERE da.city=%s AND aa.city=%s AND d.departure_date=%s""",
             (departure_city, arrival_city, date))
 
-
+        
         departures = cur.fetchall()
 
         formated_departures = []
         for d in departures:
+            arrival_date = datetime.datetime.strptime('2018-10-10',"%Y-%m-%d") + datetime.timedelta(days=d[13])
             departure = {
                 'departureID': d[11],
                 'price': get_price(d[12]),
                 'departure_time': strfdelta(d[0], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
                 'arrival_time': strfdelta(d[1], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
                 'departure_date': d[2],
+                'arrival_date': arrival_date,
                 'departure_airport':{
                     'name': d[4],
                     'code': d[5],
