@@ -1055,7 +1055,7 @@ def search_flight():
             LEFT JOIN links l ON l.linkID = f.linkID
             LEFT JOIN airports da ON da.airportID = l.departure_airportID
             LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID
-            WHERE da.city=%s AND aa.city=%s AND d.departure_date=%s""",
+            WHERE da.city=%s AND aa.city=%s AND d.departure_date=%s AND d.free_seats > 0""",
             (departure_city, arrival_city, date))
 
         
