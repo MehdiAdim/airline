@@ -1090,3 +1090,48 @@ def book(departureID):
     flash('Ticket was booked succefuly', 'success')
 
     return redirect(url_for('my_tickets'))
+
+
+@app.route('/profile', methods=['GET','POST'])
+@is_logged_in
+def profile():
+
+    cur = connection.cursor()
+
+    cur.execute("""SELECT * FROM clients 
+        WHERE username=%s""",(session['username']))
+    
+    user = cur.fetchone()
+
+    first_time = True
+    if request.method == 'POST':
+        first_time = False
+
+        surname = request.form['surname']
+        firstname = request.form['firstname']
+        adress = request.form['adresse']
+        email = request.form['email']
+
+        if (surname == '' or firstname =='' or adress=='' or email ==''):
+            flash('Missing fields', 'danger')
+            return render_template('profile.html',user =user, first_time = first_time)
+
+        try:
+            cur.execute("""
+            UPDATE clients 
+                    SET surname=%s, firstname=%s, address=%s, email=%s
+                    WHERE username=%s""", (surname, firstname, adress,email, session['username']))
+        except:
+            flash('Check the fields format', 'danger')
+            return render_template('profile.html',user =user, first_time = first_time)
+        
+        cur.execute("""SELECT * FROM clients 
+        WHERE username=%s""",(session['username']))
+    
+        user = cur.fetchone()
+         
+        return render_template('profile.html',user =user, first_time = True)
+
+
+
+    return render_template('profile.html',user =user, first_time = first_time)
