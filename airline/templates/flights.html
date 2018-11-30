@@ -30,7 +30,13 @@
         <label>Arrival time</label>
         <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{request.form.time2}}>
       </div>
-
+      <div class="form-group">
+          <label>Next day arrival</label>
+          <select name="day_plus_one" class="form-control">
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
       <div class="form-group">
         <label>Aircraft</label>
         <select name="aircraft" class="form-control" method="GET" action="/">
@@ -51,6 +57,10 @@
           {% endfor %}
         </select>
       </div>
+      <div class="form-group">
+        <label>Base price</label>
+        <input class="form-control" name="base_price" placeholder="base price in €" type="text">
+      </div>
 
       <button onclick="show_forever();" type="submit" class="btn btn-primary">Add</button>
     </form>
@@ -65,23 +75,25 @@
       <th> Flight ID </th>
       <th> From date </th>
       <th> To date </th>
-      <th> Aircraft ID </th>
-      <th> Link ID </th>
+      <th> Aircraft </th>
+      <th> Link </th>
       <th> Departure time </th>
-      <th> Arrival Time </th>
+      <th> Arrival time </th>
+      <th> Base price</th>
       <th> Edit </th>
     </tr>
 
     {% for x in flights %}
     <tr>
-      <td> {{x[0]}}</td>
-      <td> {{x[1]}}</td>
-      <td> {{x[2]}}</td>
-      <td> {{x[5]}}</td>
-      <td> {{x[6]}}</td>
-      <td> {{x[3]}}</td>
-      <td> {{x[4]}}</td>
-      <td> <a href="edit/flight/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+      <td> {{x.flightID}}</td>
+      <td> {{x.date1}}</td>
+      <td> {{x.date2}}</td>
+      <td> {{x.aircraft}}</td>
+      <td> {{x.link}}</td>
+      <td> {{x.departure_time}}</td>
+      <td> {{x.arrival_time}} {% if x.day_plus_1 %} (Next day) {% endif %}</td>
+      <td> {{x.base_price}}€</td>
+      <td> <a href="edit/flight/{{x.flightID}}" class="btn btn-default pullright"> Edit</a></td>
     </tr>
     {% endfor %}
   </table>
