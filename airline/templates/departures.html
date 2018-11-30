@@ -13,20 +13,11 @@
       </div>
 
       <div class="form-group">
-        <label>Number of free seats</label>
-        <input type="text" name="free_seats" class="form-control" value={{request.form.free_seats}}>
-      </div>
-      <div class="form-group">
-        <label>Number of sold seats</label>
-        <input type="text" name="sold_seats" class="form-control" value={{request.form.sold_seats}}>
-      </div>
-
-      <div class="form-group">
         <label>Flight</label>
         <select name="flight" class="form-control" method="GET" action="/">
           <option disabled selected>Select flight</option>
           {% for x in flights %}
-          <option value="{{x[0]}}">{{x[0]}} : {{x[1]}}</option>
+          <option value="{{x[0]}}">{{x[0]}} : from {{x[9]}} to {{x[10]}} at {{x[3]}}</option>
           {% endfor %}
         </select>
       </div>
@@ -76,15 +67,15 @@
 <div class="panel panel-default">
   <table class="table table-striped">
     <tr>
-      <th> Departure ID </th>
+      <th> ID </th>
       <th> Date </th>
       <th> free seats </th>
       <th> sold seats</th>
       <th> flightID </th>
-      <th> pilot1ID </th>
-      <th> pilot2ID </th>
-      <th> crew_1ID </th>
-      <th> crew_2ID </th>
+      <th> pilot 1 </th>
+      <th> pilot 2 </th>
+      <th> crew member 1 </th>
+      <th> crew member 2 </th>
       <th> Edit </th>
       <th> Delete </th>
 
@@ -95,11 +86,11 @@
       <td> {{x[1]}}</td>
       <td> {{x[2]}}</td>
       <td> {{x[3]}}</td>
-      <td> {{x[4]}}</td>
-      <td> {{x[5]}}</td>
-      <td> {{x[6]}}</td>
-      <td> {{x[7]}}</td>
-      <td> {{x[8]}}</td>
+      <td> {{x[17]}} to {{x[18]}} at {{x[19]}}</td>
+      <td> {{x[9]}} {{x[10]}}</td>
+      <td> {{x[11]}} {{x[12]}}</td>
+      <td> {{x[13]}} {{x[14]}}</td>
+      <td> {{x[15]}} {{x[16]}}</td>
       <td> <a href="edit/departure/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
       <td> <a href="delete/departure/{{x[0]}}" class="btn btn-danger btn-sm pullrigh"> Delete</a></td>
 

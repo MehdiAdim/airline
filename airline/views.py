@@ -889,11 +889,31 @@ def departures():
     left join role on employees.roleID = role.roleID
     WHERE role.name = "crew" """)
     crews = cur.fetchall()
-    cur.execute(""" SELECT * FROM flights""")
+
+    cur.execute(""" SELECT f.*, da.code, aa.code
+    FROM flights f
+    LEFT JOIN links l ON l.linkID = f.linkID
+    LEFT JOIN airports da ON da.airportID = l.departure_airportID
+    LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID""")
     flights = cur.fetchall()
-    result = cur.execute("SELECT * FROM departures")
+
+    result = cur.execute("""SELECT d.*,
+    p1.firstname, p1.surname,
+    p2.firstname, p2.surname,
+    c1.firstname, c1.surname,
+    c2.firstname, c2.surname,
+    da.code, aa.code, f.departure_time
+    FROM departures d
+    LEFT JOIN employees p1 ON p1.employeeID=pilot1ID
+    LEFT JOIN employees p2 ON p2.employeeID=pilot2ID
+    LEFT JOIN employees c1 ON c1.employeeID=crew_member1ID
+    LEFT JOIN employees c2 ON c2.employeeID=crew_member2ID
+    LEFT JOIN flights f ON f.flightID = d.flightID
+    LEFT JOIN links l ON l.linkID = f.linkID
+    LEFT JOIN airports da ON da.airportID = l.departure_airportID
+    LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID""")
     departures = cur.fetchall()
-    
+    cur.close()
 
     first_time = True
 
@@ -901,9 +921,8 @@ def departures():
         first_time = False
 
         departure_date = request.form['departure_date']
-        free_seats = request.form['free_seats']
-        sold_seats = request.form['sold_seats']
-        
+
+
         try:
             flight = request.form['flight']
             pilot1 = request.form['pilot1']
@@ -920,7 +939,7 @@ def departures():
                 departures=departures,
                 first_time=first_time)
 
-        if(departure_date =='' or free_seats=='' or sold_seats==''):
+        if(departure_date ==''):
             flash('Missing fields', 'danger')
 
             return render_template('departures.html',
@@ -931,11 +950,20 @@ def departures():
                 first_time=first_time)
 
         cur = connection.cursor()
+        cur.execute("""SELECT a.seats
+        FROM flights f
+        LEFT JOIN aircrafts a ON a.aircraftID = f.aircraftID
+        WHERE f.flightID = %s""", flight)
+        free_seats = cur.fetchone()
+        cur.close()
 
         try:
+            cur = connection.cursor()
             cur.execute("""INSERT INTO departures(departure_date, free_seats, sold_seats, flightID, pilot1ID, pilot2ID, crew_member1ID, crew_member2ID)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
-                (departure_date, free_seats, sold_seats, flight, pilot1, pilot2, crew1,crew2))
+                (departure_date, free_seats, 0, flight, pilot1, pilot2, crew1,crew2))
+            connection.commit()
+            cur.close()
         except :
             
             flash('Check the fields format', 'danger')
@@ -947,9 +975,7 @@ def departures():
                 departures=departures,
                 first_time=first_time)
 
-        connection.commit()
-
-        cur.close()
+        
 
         flash('Departure added succefuly', 'success')
 
@@ -995,8 +1021,13 @@ def edit_departure(id):
     LEFT JOIN role on employees.roleID = role.roleID
     WHERE role.name = "crew" """)
     crews = cur.fetchall()
-    cur.execute("""SELECT flightID FROM flights""")
+    cur.execute(""" SELECT f.*, da.code, aa.code
+    FROM flights f
+    LEFT JOIN links l ON l.linkID = f.linkID
+    LEFT JOIN airports da ON da.airportID = l.departure_airportID
+    LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID""")
     flights = cur.fetchall()
+
 
     if request.method == 'POST':
         # Get Form Fields
@@ -1005,11 +1036,11 @@ def edit_departure(id):
         sold_seats = request.form['sold_seats']
         
         try:
-            flight = request.form['sold_seats'][1]
-            pilot1 = request.form['pilot1'][1]
-            pilot2 = request.form['pilot2'][1]
-            crew1 = request.form['crew1'][1]
-            crew2 = request.form['crew2'][1]
+            flight = request.form['flight']
+            pilot1 = request.form['pilot1']
+            pilot2 = request.form['pilot2']
+            crew1 = request.form['crew1']
+            crew2 = request.form['crew2']
         except:
             flash('Missing fields', 'danger')
 
@@ -1023,6 +1054,8 @@ def edit_departure(id):
         try :
             cur.execute("UPDATE departures SET departure_date=%s, free_seats=%s,sold_seats=%s,flightID=%s,pilot1ID=%s,pilot2ID=%s, crew_member1ID=%s,crew_member2ID=%s WHERE departureID=%s", 
                     (departure_date, free_seats, sold_seats, flight, pilot1, pilot2,crew1,crew2,id))
+            connection.commit()
+            cur.close()
         except :
             flash('Error in fields', 'danger')
             return redirect(url_for('edit_departures',id=id))
@@ -1035,7 +1068,7 @@ def edit_departure(id):
 
         return redirect(url_for('departures'))
     
-    return render_template('edit_departure.html', departure = departure, flights=flights, pilots=pilots)
+    return render_template('edit_departure.html', departure = departure, flights=flights, pilots=pilots, crews=crews)
 
 
 
