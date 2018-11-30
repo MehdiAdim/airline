@@ -13,7 +13,7 @@
         <label>From date</label>
         <input class="form-control" name="date1" placeholder="YYYY-MM-DD" type="text" value={{request.form.date1}}>
       </div>
-    
+
       <div class="form-group">
         <!-- Date input -->
         <label>To date</label>
@@ -24,13 +24,13 @@
         <label>Departure time</label>
         <input class="form-control" name="time1" placeholder="HH:MM" type="text" value={{request.form.time1}}>
       </div>
-    
+
       <div class="form-group">
         <!-- Date input -->
         <label>Arrival time</label>
         <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{request.form.time2}}>
       </div>
-    
+
       <div class="form-group">
         <label>Aircraft</label>
         <select name="aircraft" class="form-control" method="GET" action="/">
@@ -40,18 +40,18 @@
           {% endfor %}
         </select>
       </div>
-    
+
       <div class="form-group">
         <label>Link</label>
         <select name="link" class="form-control" method="GET" action="/">
-    
+
           <option disabled selected>Links between airports from database</option>
           {% for x in list_link %}
           <option value="{{x}}">{{x}}</option>
           {% endfor %}
         </select>
       </div>
-    
+
       <button onclick="show_forever();" type="submit" class="btn btn-primary">Add</button>
     </form>
   </div>
@@ -59,44 +59,45 @@
 
 
 
+<div class="panel panel-default">
+  <table class="table table-striped">
+    <tr>
+      <th> Flight ID </th>
+      <th> From date </th>
+      <th> To date </th>
+      <th> Aircraft ID </th>
+      <th> Link ID </th>
+      <th> Departure time </th>
+      <th> Arrival Time </th>
+      <th> Edit </th>
+    </tr>
 
-<table class="table table-striped">
-  <tr>
-    <th> Flight ID </th>
-    <th> From date </th>
-    <th> To date </th>
-    <th> Aircraft ID </th>
-    <th> Link ID </th>
-    <th> Departure time </th>
-    <th> Arrival Time </th>
-    <th> Edit </th>
-  </tr>
-  
-  {% for x in flights %}
-  <tr>
-    <td> {{x[0]}}</td>
-    <td> {{x[1]}}</td>
-    <td> {{x[2]}}</td>
-    <td> {{x[5]}}</td>
-    <td> {{x[6]}}</td>
-    <td> {{x[3]}}</td>
-    <td> {{x[4]}}</td>
-    <td> <a href="edit/flight/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
-  </tr>
-  {% endfor %}
-</table>
+    {% for x in flights %}
+    <tr>
+      <td> {{x[0]}}</td>
+      <td> {{x[1]}}</td>
+      <td> {{x[2]}}</td>
+      <td> {{x[5]}}</td>
+      <td> {{x[6]}}</td>
+      <td> {{x[3]}}</td>
+      <td> {{x[4]}}</td>
+      <td> <a href="edit/flight/{{x[0]}}" class="btn btn-default pullright"> Edit</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 
 
 <script>
   function show_add() {
-    if(document.getElementById("add").style.display === "block"){
+    if (document.getElementById("add").style.display === "block") {
       document.getElementById("add").style.display = "none";
     } else {
       document.getElementById("add").style.display = "block";
     }
   }
 
-  function show_forever(){
+  function show_forever() {
     document.getElementById("add").style.display = "block";
 
   }

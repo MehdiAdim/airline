@@ -1,9 +1,35 @@
 {% extends 'layout.html' %}
+
 {% block body %}
+<h1>Search a flight</h1>
+<form action="" method="POST">
+
+  <div class="form-group">
+    <label>From</label>
+    <select name="departure_city" class="form-control" method="GET" action="/">
+      {% for x in cities %}
+      <option value="{{x[0]}}" {% if departure == x[0] %}selected{% endif %}>{{x[0]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>To</label>
+    <select name="arrival_city" class="form-control" method="GET" action="/">
+      {% for x in cities %}
+      <option value="{{x[0]}}" {% if arrival == x[0] %}selected{% endif %}>{{x[0]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  
+
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
 
 
-{% for x in tickets %}
-<div class="row">
+
+{% for x in departures %}
+<div class="row result">
     <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -17,7 +43,7 @@
                     <div class="row">Total price: {{x.price}}€</div>
                 </div>
                 <div class="col-xs-4">
-                    <a href="/cancel/{{x.ticketID}}"><button type="button" class="btn btn-default pull-right">Cancel</button></a>
+                    <a href="/book/{{x.departureID}}"><button type="button" class="btn btn-default pull-right">Book</button></a>
                 </div>
             </div>
         </div>
@@ -34,6 +60,10 @@
 
     .ticket-title .glyphicon {
         font-size: 0.75em;
+    }
+
+    .result {
+        margin-top: 10px;
     }
 </style>
 {% endblock %}

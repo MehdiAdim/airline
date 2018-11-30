@@ -1,0 +1,15 @@
+html, body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.nav {
+    font-family: 'Oxygen', sans-serif;
+}
+
+.table>tbody>tr>td {
+    vertical-align: middle !important;
+}
+
+.help-inline {
+    color: #ff5757;
+}
