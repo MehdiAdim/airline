@@ -30,13 +30,18 @@
     <label>Arrival time</label>
     <input class="form-control" name="time2" placeholder="HH:MM" type="text" value={{edit_one[4]}}>
   </div>
-
+  <div class="form-group">
+    <label>Next day arrival</label>
+    <select name="day_plus_1" class="form-control" method="GET" action="/">
+      <option value="0" {% if not edit_one[8] %}selected{% endif %}>No</option>
+      <option value="1" {% if edit_one[8] %}selected{% endif %}>Yes</option>
+    </select>
+  </div>
   <div class="form-group">
     <label>Aircraft</label>
     <select name="aircraft" class="form-control" method="GET" action="/">
-      <option selected>{{edit_one[5]}}</option>
       {% for x in list_aircraft %}
-      <option value="{{x[:3]}}">{{x[:3]}}</option>
+      <option value="{{x[0]}}" {% if edit_one[5] == x[1] %}selected{% endif %}>{{x[:3]}}</option>
       {% endfor %}
     </select>
   </div>
@@ -44,13 +49,16 @@
   <div class="form-group">
     <label>Link</label>
     <select name="link" class="form-control" method="GET" action="/">
-
-      <option selected>{{edit_one[6]}}</option>
       {% for x in list_link %}
-      <option value="{{x}}">{{x}}</option>
+      <option value="{{x[0]}}" {% if edit_one[6] == x[1] %}selected{% endif %}>{{x}}</option>
       {% endfor %}
     </select>
   </div>
+
+  <div class="form-group">
+      <label>Base price</label>
+      <input class="form-control" name="base_price" placeholder="Base price in €" type="text" value={{edit_one[7]}}>
+    </div>
 
   <button type="submit" class="btn btn-primary">Edit</button>
 </form>

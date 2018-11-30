@@ -419,8 +419,28 @@ def flights():
     first_time = True
     # Create cursor
     cur = connection.cursor()
-    result = cur.execute("SELECT * FROM flights")
+    result = cur.execute("""SELECT f.*, a.immatriculation, da.code, aa.code
+    FROM flights f
+    LEFT JOIN aircrafts a on a.aircraftID = f.aircraftID
+    LEFT JOIN links l on l.linkID = f.linkID
+    LEFT JOIN airports da ON da.airportID = l.departure_airportID
+    LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID
+    ORDER BY f.date1, f.date2, f.flightID""")
     flights = cur.fetchall()
+    formated_flights = []
+    for f in flights:
+        flight = {
+            'flightID': f[0],
+            'date1':f[1],
+            'date2':f[2],
+            'departure_time': strfdelta(f[3], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
+            'arrival_time': strfdelta(f[4], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
+            'aircraft': f[9],
+            'link': f[10] + ' to ' + f[11],
+            'base_price': f[7],
+            'day_plus_1': f[8],
+        }
+        formated_flights.append(flight)
     cur.close()
     
      # Create cursor
@@ -455,6 +475,8 @@ def flights():
         date2 = request.form['date2']
         time1 = request.form['time1']
         time2 = request.form['time2']
+        base_price = request.form['base_price']
+        day_plus_1 = request.form['day_plus_one']
 
         try :
             aircraft = request.form['aircraft'].strip('()').split(',')[0]
@@ -462,7 +484,7 @@ def flights():
         except:
             flash('Aircraft or link missed', 'danger')
             return render_template('flights.html',
-                flights = flights,
+                flights = formated_flights,
                 list_aircraft=list_aircrafts,
                 list_link = list_link ,
                 first_time=first_time)
@@ -470,19 +492,19 @@ def flights():
         if date1 == '' or date2 == '' or time1 == '' or time2 == '':
             flash('Complete Form', 'danger')
             return render_template('flights.html',
-                flights = flights,
+                flights = formated_flights,
                 list_aircraft=list_aircrafts,
                 list_link = list_link ,
                 first_time = first_time)
 
         try:
-            cur.execute("""INSERT INTO flights(date1, date2, departure_time, arrival_time, aircraftID, linkID)
-                VALUES(%s, %s, %s, %s, %s, %s)""",
-                (date1, date2, time1, time2, aircraft, link))
+            cur.execute("""INSERT INTO flights(date1, date2, departure_time, arrival_time, aircraftID, linkID, base_price, day_plus_1)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
+                (date1, date2, time1, time2, aircraft, link, base_price, day_plus_1))
         except:
             flash('Check fields format', 'danger')
             return render_template('flights.html',
-                flights = flights,
+                flights = formated_flights,
                 list_aircraft=list_aircrafts,
                 list_link = list_link,
                 first_time=first_time)
@@ -500,7 +522,7 @@ def flights():
 
 
     return render_template('flights.html',
-        flights = flights,
+        flights = formated_flights,
         list_aircraft=list_aircrafts,
         list_link = list_link ,
         first_time=first_time)
@@ -508,10 +530,10 @@ def flights():
     
 
 
-@app.route('/edit/flight/<string:id>', methods=['GET', 'POST'])
+@app.route('/edit/flight/<string:flightID>', methods=['GET', 'POST'])
 @is_logged_in
 @is_admin
-def edit_flight(id):
+def edit_flight(flightID):
 
     # Create cursor
     cur = connection.cursor()
@@ -538,9 +560,9 @@ def edit_flight(id):
     
         list_link.append(str1)
 
-        cur.execute("SELECT * FROM flights WHERE flightID = %s",(id))
-
-        edit_one = cur.fetchone()
+    cur.execute("SELECT * FROM flights WHERE flightID = %s",(flightID))
+    edit_one = cur.fetchone()
+    cur.close()
 
     if request.method == 'POST':
         # Get Form Fields
@@ -548,32 +570,33 @@ def edit_flight(id):
         date2 = request.form['date2']
         time1 = request.form['time1']
         time2 = request.form['time2']
+        base_price = request.form['base_price']
+        day_plus_1 = request.form['day_plus_1']
 
         try :
-            aircraft = request.form['aircraft'].strip('()').split(',')[0]
-            link = request.form['link'].split(':')[0]
+            aircraftID = request.form['aircraft']
+            linkID = request.form['link']
         except:
-            flash('Aircraft or link missed', 'danger')
-            return redirect(url_for('edit_flight', id = id))
+            flash('Aircraft or link is missing', 'danger')
+            return redirect(url_for('edit_flight', id = flightID))
 
-        print(aircraft)
-        print(link)
 
         if date1 == '' or date2 == '' or time1 == '' or time2 == '':
             flash('Complete Form', 'danger')
-            return redirect(url_for('edit_flight',id= id))
+            return redirect(url_for('edit_flight',id= flightID))
         try:
+            cur = connection.cursor()
             cur.execute("""UPDATE flights
-                SET date1=%s, date2=%s,departure_time=%s,arrival_time=%s,aircraftID=%s,linkID=%s WHERE flightID=%s""",
-                (date1, date2, time1, time2, aircraft, link,id))
+                SET date1=%s, date2=%s, departure_time=%s,
+                    arrival_time=%s, aircraftID=%s,linkID=%s,
+                    base_price=%s, day_plus_1=%s
+                WHERE flightID=%s""",
+                (date1, date2, time1, time2, aircraftID, linkID, base_price, day_plus_1, flightID))
+            connection.commit()
+            cur.close()
         except:
             flash('Check fields format', 'danger')
-            return redirect(url_for('edit_flight',id= id))
-        # Commit to DB
-        connection.commit()
-
-        # Close connection
-        cur.close()
+            return redirect(url_for('edit_flight',id= flightID))
 
         flash('Flight updated succefuly', 'success')
 
@@ -1043,7 +1066,7 @@ def search_flight():
             LEFT JOIN links l ON l.linkID = f.linkID
             LEFT JOIN airports da ON da.airportID = l.departure_airportID
             LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID
-            WHERE da.city=%s AND aa.city=%s AND d.departure_date=%s""",
+            WHERE da.city=%s AND aa.city=%s AND d.departure_date=%s AND d.free_seats > 0""",
             (departure_city, arrival_city, date))
 
         
