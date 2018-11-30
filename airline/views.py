@@ -295,7 +295,6 @@ def links():
             (departure, arrival))
         connection.commit()
         cur.close()
-        print('ok')
         flash('Link added succefuly', 'success')
 
         return redirect(url_for('links'))
@@ -308,7 +307,6 @@ def links():
         LEFT JOIN airports AS aa on aa.airportID = l.arrival_airportID""")
     links = cur.fetchall()
     cur.close()
-    print(links)
     cur = connection.cursor()
     result = cur.execute("SELECT * FROM airports")
     airports = cur.fetchall()
