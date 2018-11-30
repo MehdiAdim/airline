@@ -27,9 +27,8 @@
      <div class="form-group">
        <label>Flight</label>
        <select name="flight" class="form-control" method="GET" action="/">
-         <option  selected>({{departure[4]}})</option>
          {% for x in flights %}
-         <option value="{{x}}">{{x}}</option>
+         <option value="{{x[0]}}" {% if departure[4] == x[0] %}selected{% endif %}>{{x[0]}} : from {{x[9]}} to {{x[10]}} at {{x[3]}}</option>
          {% endfor %}
        </select>
      </div>
@@ -37,41 +36,37 @@
      <div class="form-group">
        <label>First pilot</label>
        <select name="pilot1" class="form-control" method="GET" action="/">
-         <option  selected>({{departure[5]}})</option>
          {% for x in pilots %}
-         <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+         <option value="{{x[0]}}" {% if departure[5] == x[0] %}selected{% endif %}>{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
          {% endfor %}
        </select>
      </div>
      <div class="form-group">
        <label>Second pilot</label>
        <select name="pilot2" class="form-control" method="GET" action="/">
-         <option  selected>({{departure[6]}})</option>
          {% for x in pilots %}
-         <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+         <option value="{{x[0]}}" {% if departure[6] == x[0] %}selected{% endif %}>{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
          {% endfor %}
        </select>
      </div>
      <div class="form-group">
        <label>First crew member</label>
        <select name="crew1" class="form-control" method="GET" action="/">
-         <option  selected>({{departure[7]}})</option>
          {% for x in crews %}
-         <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+         <option value="{{x[0]}}" {% if departure[7] == x[0] %}selected{% endif %}>{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
          {% endfor %}
        </select>
      </div>
      <div class="form-group">
        <label>Second crew member </label>
        <select name="crew2" class="form-control" method="GET" action="/">
-         <option  selected>({{departure[8]}})</option>
          {% for x in crews %}
-         <option value="{{x[:3]}}">{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
+         <option value="{{x[0]}}" {% if departure[8] == x[0] %}selected{% endif %}>{{x[0]}} : {{x[1]}} - {{x[2]}}</option>
          {% endfor %}
        </select>
      </div>
 
-     <button type="submit" class="btn btn-primary">Add</button>
+     <button type="submit" class="btn btn-primary">Edit</button>
    </form>
 
 
