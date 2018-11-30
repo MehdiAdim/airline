@@ -596,7 +596,8 @@ def my_tickets():
         SELECT t.ticketID, t.date_of_issue, t.price,
             f.departure_time, f.arrival_time,
             d.departure_date,
-            da.*, aa.*
+            da.*, aa.*,
+            f.day_plus_1
         FROM tickets t
         LEFT JOIN departures d ON d.departureID = t.departureID
         LEFT JOIN flights f ON f.flightID = d.flightID
@@ -612,6 +613,7 @@ def my_tickets():
     cur.close()
     formated_tickets = []
     for t in tickets:
+        arrival_date = datetime.datetime.strptime('2018-10-10',"%Y-%m-%d") + datetime.timedelta(days=t[14])
         ticket = {
             'ticketID': t[0],
             'date_of_issue': t[1],
@@ -619,6 +621,7 @@ def my_tickets():
             'departure_time': strfdelta(t[3], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
             'arrival_time': strfdelta(t[4], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
             'departure_date': t[5],
+            'arrival_date': arrival_date,
             'departure_airport':{
                 'name': t[7],
                 'code': t[8],
@@ -1014,32 +1017,37 @@ def search_flight():
         # Get Form Fields
         departure_city = request.form['departure_city']
         arrival_city = request.form['arrival_city']
-        print(departure_city)
-        print(arrival_city)
+        date = request.form['date']
+        
         cur = connection.cursor()
         result = cur.execute("""
             SELECT f.departure_time, f.arrival_time,
                 d.departure_date,
                 da.*, aa.*,
-                d.departureID
+                d.departureID,
+                f.base_price,
+                f.day_plus_1
             FROM departures d
             LEFT JOIN flights f ON f.flightID = d.flightID
             LEFT JOIN links l ON l.linkID = f.linkID
             LEFT JOIN airports da ON da.airportID = l.departure_airportID
             LEFT JOIN airports aa ON aa.airportID = l.arrival_airportID
-            WHERE da.city=%s AND aa.city=%s""",(departure_city, arrival_city))
+            WHERE da.city=%s AND aa.city=%s AND d.departure_date=%s""",
+            (departure_city, arrival_city, date))
 
-
+        
         departures = cur.fetchall()
 
         formated_departures = []
         for d in departures:
+            arrival_date = datetime.datetime.strptime('2018-10-10',"%Y-%m-%d") + datetime.timedelta(days=d[13])
             departure = {
                 'departureID': d[11],
-                'price': 555,
+                'price': get_price(d[12]),
                 'departure_time': strfdelta(d[0], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
                 'arrival_time': strfdelta(d[1], "{hours:0>2d}:{minutes:0>2d} {AMPM}"),
                 'departure_date': d[2],
+                'arrival_date': arrival_date,
                 'departure_airport':{
                     'name': d[4],
                     'code': d[5],
@@ -1060,14 +1068,16 @@ def search_flight():
                 cities = sorted(cities),
                 departures=formated_departures,
                 departure=departure_city,
-                arrival=arrival_city)
+                arrival=arrival_city,
+                date=date)
         else:
             msg = "No flights were found"
             return render_template('search-flight.html',
                 cities = sorted(cities),
                 msg=msg,
                 departure=departure_city,
-                arrival=arrival_city)
+                arrival=arrival_city,
+                date=date)
 
     return render_template('search-flight.html', cities = sorted(cities))
 
@@ -1079,10 +1089,16 @@ def book(departureID):
     cur.execute("""SELECT clientID FROM clients c
         WHERE c.username=%s""",(session['username']))
     clientID = cur.fetchone()
+    cur.execute("""SELECT f.base_price 
+        FROM departures d
+        LEFT JOIN flights f on f.flightID = d.flightID
+        WHERE d.departureID=%s""",(departureID))
+    base_price = cur.fetchone()
+    
 
     cur.execute("""INSERT INTO tickets(date_of_issue, price, departureID, clientID)
         VALUES(%s, %s, %s, %s)""",
-        (datetime.datetime.now(), 555, departureID, clientID))
+        (datetime.datetime.now(), get_price(base_price[0]), departureID, clientID))
         
     connection.commit()
     cur.close()
@@ -1090,6 +1106,10 @@ def book(departureID):
     flash('Ticket was booked succefuly', 'success')
 
     return redirect(url_for('my_tickets'))
+
+
+def get_price(base_price):
+    return 1.20 * float(base_price)
 
 
 @app.route('/profile', methods=['GET','POST'])
@@ -1135,3 +1155,4 @@ def profile():
 
 
     return render_template('profile.html',user =user, first_time = first_time)
+

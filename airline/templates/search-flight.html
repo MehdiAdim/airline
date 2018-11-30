@@ -4,26 +4,30 @@
 <h1>Search a flight</h1>
 <form action="" method="POST">
 
-  <div class="form-group">
-    <label>From</label>
-    <select name="departure_city" class="form-control" method="GET" action="/">
-      {% for x in cities %}
-      <option value="{{x[0]}}" {% if departure == x[0] %}selected{% endif %}>{{x[0]}}</option>
-      {% endfor %}
-    </select>
-  </div>
+    <div class="form-group">
+        <label>From</label>
+        <select name="departure_city" class="form-control" method="GET" action="/">
+            {% for x in cities %}
+            <option value="{{x[0]}}" {% if departure==x[0] %}selected{% endif %}>{{x[0]}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-  <div class="form-group">
-    <label>To</label>
-    <select name="arrival_city" class="form-control" method="GET" action="/">
-      {% for x in cities %}
-      <option value="{{x[0]}}" {% if arrival == x[0] %}selected{% endif %}>{{x[0]}}</option>
-      {% endfor %}
-    </select>
-  </div>
-  
+    <div class="form-group">
+        <label>To</label>
+        <select name="arrival_city" class="form-control" method="GET" action="/">
+            {% for x in cities %}
+            <option value="{{x[0]}}" {% if arrival==x[0] %}selected{% endif %}>{{x[0]}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-  <button type="submit" class="btn btn-primary">Search</button>
+    <div class="form-group">
+        <!-- Date input -->
+        <label>Date</label>
+        <input class="form-control" name="date" placeholder="YYYY-MM-DD" type="text" value={{date}}>
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
 
@@ -33,13 +37,16 @@
     <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div class="ticket-title">{{x.departure_airport.city}} <span class="glyphicon glyphicon-arrow-right"></span> {{x.arrival_airport.city}}</div>
+                <div class="ticket-title">{{x.departure_airport.city}} <span class="glyphicon glyphicon-arrow-right"></span>
+                    {{x.arrival_airport.city}}</div>
             </div>
             <div class="panel-body">
                 <div class="col-xs-8">
-                    <div class="row">From <span class="city">{{x.departure_airport.city}} - {{x.departure_airport.name}} ({{x.departure_airport.code}})</span> To <span class="city">{{x.arrival_airport.city}} - {{x.arrival_airport.name}} ({{x.arrival_airport.code}})</span></div>
+                    <div class="row">From <span class="city">{{x.departure_airport.city}} -
+                            {{x.departure_airport.name}} ({{x.departure_airport.code}})</span> To <span class="city">{{x.arrival_airport.city}}
+                            - {{x.arrival_airport.name}} ({{x.arrival_airport.code}})</span></div>
                     <div class="row">Departure on {{x.departure_date.strftime('%Y-%m-%d')}} at {{x.departure_time}}</div>
-                    <div class="row">Arrival on {{x.departure_date.strftime('%Y-%m-%d')}} at {{x.arrival_time}}</div>
+                    <div class="row">Arrival on {{x.arrival_date.strftime('%Y-%m-%d')}} at {{x.arrival_time}}</div>
                     <div class="row">Total price: {{x.price}}€</div>
                 </div>
                 <div class="col-xs-4">
